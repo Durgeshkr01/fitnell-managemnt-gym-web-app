@@ -185,7 +185,7 @@ export default function Home() {
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     type="password"
-                    placeholder="Vivek Babu"
+                    placeholder="Enter password"
                     required
                   />
                 </div>
