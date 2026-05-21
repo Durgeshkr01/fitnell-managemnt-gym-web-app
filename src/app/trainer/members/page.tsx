@@ -20,6 +20,8 @@ function TrainerMembersContent() {
   const [error, setError] = useState<string | null>(null);
   const [activeAttendance, setActiveAttendance] = useState<Record<string, string>>({});
   const [activeFilter, setActiveFilter] = useState("all");
+  const [searchText, setSearchText] = useState("");
+  const [visibleCount, setVisibleCount] = useState(10);
 
   useEffect(() => {
     const filterParam = searchParams.get("filter");
@@ -34,6 +36,7 @@ function TrainerMembersContent() {
     try {
       const results = await getMembers();
       setMembers(results);
+      setVisibleCount(10);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Failed to load members.");
     } finally {
@@ -105,7 +108,10 @@ function TrainerMembersContent() {
     });
   };
 
+  const normalizeValue = (value: string) => value.toLowerCase().trim();
+
   const filteredMembers = useMemo(() => {
+    const normalizedSearch = normalizeValue(searchText);
     const hasDues = (value: string) => {
       const raw = String(value ?? "").replace(/[^0-9.]/g, "");
       const amount = Number(raw);
@@ -113,6 +119,15 @@ function TrainerMembersContent() {
     };
 
     return members.filter((member) => {
+      const matchesSearch = normalizedSearch
+        ? normalizeValue(member.name ?? "").includes(normalizedSearch) ||
+          normalizeValue(member.rollNumber ?? "").includes(normalizedSearch)
+        : true;
+
+      if (!matchesSearch) {
+        return false;
+      }
+
       if (activeFilter === "active") {
         return member.status === "Active";
       }
@@ -128,11 +143,19 @@ function TrainerMembersContent() {
 
       return true;
     });
-  }, [members, activeFilter]);
+    });
+  }, [members, activeFilter, searchText]);
 
   const sortedMembers = useMemo(() => {
     return [...filteredMembers].sort(compareRollNumbers);
   }, [filteredMembers]);
+
+  const visibleMembers = useMemo(
+    () => sortedMembers.slice(0, visibleCount),
+    [sortedMembers, visibleCount]
+  );
+
+  const canLoadMore = visibleCount < sortedMembers.length;
 
   const assignedLabel = useMemo(() => {
     if (loading) {
@@ -184,7 +207,28 @@ function TrainerMembersContent() {
             <h3 className="font-display text-lg text-white">Assigned Members</h3>
             <p className="text-sm text-slate-300">{assignedLabel}</p>
           </div>
-          <div />
+          <div className="flex w-full items-center gap-3 md:w-auto">
+            <input
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white md:w-64"
+              value={searchText}
+              onChange={(event) => {
+                setSearchText(event.target.value);
+                setVisibleCount(10);
+              }}
+              placeholder="Search name or roll no."
+            />
+            <ActionButton
+              actionName="Trainer Members: Refresh"
+              onClick={(event) => {
+                event.preventDefault();
+                loadMembers();
+                loadAttendance();
+              }}
+              className="rounded-full border border-white/10 px-3 py-2 text-xs text-slate-300"
+            >
+              Refresh
+            </ActionButton>
+          </div>
         </div>
 
         <div className="mt-6 space-y-4">
@@ -204,7 +248,7 @@ function TrainerMembersContent() {
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
-              {sortedMembers.map((member) => (
+              {visibleMembers.map((member) => (
                 <MemberCard
                   key={member.id}
                   member={member}
@@ -215,6 +259,18 @@ function TrainerMembersContent() {
               ))}
             </div>
           )}
+
+          {canLoadMore ? (
+            <div className="flex justify-center">
+              <button
+                className="rounded-full border border-white/10 px-4 py-2 text-xs text-slate-300"
+                onClick={() => setVisibleCount((prev) => prev + 10)}
+                type="button"
+              >
+                Load More
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
