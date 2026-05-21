@@ -43,11 +43,13 @@ export default function TrainerCodeManager() {
       return;
     }
 
+    const firestore = db;
+
     let unsubscribe: (() => void) | null = null;
 
     ensureAnonymousAuth()
       .then(() => {
-        const codesRef = collection(db, "trainerCodes");
+        const codesRef = collection(firestore, "trainerCodes");
         const codesQuery = query(codesRef, orderBy("createdAt", "desc"));
         unsubscribe = onSnapshot(
           codesQuery,
