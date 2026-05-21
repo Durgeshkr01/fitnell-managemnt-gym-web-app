@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { collection, getDocs, query, where } from "firebase/firestore";
@@ -23,6 +23,21 @@ export default function Home() {
     [role]
   );
 
+  useEffect(() => {
+    const storedRole = window.localStorage.getItem("authRole");
+    const hasAdmin = window.localStorage.getItem("adminAuthed") === "true";
+    const trainerCodeValue = window.localStorage.getItem("trainerCode");
+
+    if (storedRole === "admin" && hasAdmin) {
+      router.replace("/admin");
+      return;
+    }
+
+    if (storedRole === "trainer" && trainerCodeValue) {
+      router.replace("/trainer");
+    }
+  }, [router]);
+
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
@@ -38,6 +53,11 @@ export default function Home() {
           setError("Invalid admin credentials.");
           setLoading(false);
           return;
+        }
+
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem("authRole", "admin");
+          window.localStorage.setItem("adminAuthed", "true");
         }
 
         router.push("/admin");
@@ -77,6 +97,7 @@ export default function Home() {
 
       const trainerName = String(activeMatch.data().trainerName ?? "").trim();
       if (typeof window !== "undefined") {
+        window.localStorage.setItem("authRole", "trainer");
         window.localStorage.setItem("trainerName", trainerName);
         window.localStorage.setItem("trainerCode", code);
       }

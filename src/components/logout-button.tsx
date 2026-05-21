@@ -16,6 +16,13 @@ export default function LogoutButton() {
       }
     }
 
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("authRole");
+      window.localStorage.removeItem("adminAuthed");
+      window.localStorage.removeItem("trainerName");
+      window.localStorage.removeItem("trainerCode");
+    }
+
     router.push("/");
   };
 
