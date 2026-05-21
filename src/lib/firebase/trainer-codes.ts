@@ -8,6 +8,7 @@ import {
   serverTimestamp,
   updateDoc,
   where,
+  type Firestore,
 } from "firebase/firestore";
 import { db, firebaseEnabled } from "./client";
 import { ensureAnonymousAuth } from "./ensure-auth";
@@ -24,20 +25,24 @@ export type TrainerCodeRecord = {
   active: boolean;
 };
 
-export async function createTrainerCode(input: TrainerCodeInput) {
+const ensureReady = async (): Promise<Firestore> => {
   if (!firebaseEnabled || !db) {
     throw new Error("Firebase not configured");
   }
 
   await ensureAnonymousAuth();
+  return db;
+};
 
+export async function createTrainerCode(input: TrainerCodeInput) {
+  const firestore = await ensureReady();
 
   const code = input.code.trim();
   if (!code) {
     throw new Error("Trainer code is required");
   }
 
-  const codesRef = collection(db, "trainerCodes");
+  const codesRef = collection(firestore, "trainerCodes");
   const existingQuery = query(codesRef, where("code", "==", code));
   const existingSnapshot = await getDocs(existingQuery);
   if (!existingSnapshot.empty) {
@@ -53,26 +58,17 @@ export async function createTrainerCode(input: TrainerCodeInput) {
 }
 
 export async function toggleTrainerCode(id: string, active: boolean) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
-  await ensureAnonymousAuth();
-
-  const docRef = doc(db, "trainerCodes", id);
+  const firestore = await ensureReady();
+  const docRef = doc(firestore, "trainerCodes", id);
   return updateDoc(docRef, { active });
 }
 
 export async function deleteTrainerCode(id: string) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedId = id.trim();
   if (!trimmedId) {
     throw new Error("Trainer code ID is required");
   }
 
-  await ensureAnonymousAuth();
-  await deleteDoc(doc(db, "trainerCodes", trimmedId));
+  const firestore = await ensureReady();
+  await deleteDoc(doc(firestore, "trainerCodes", trimmedId));
 }

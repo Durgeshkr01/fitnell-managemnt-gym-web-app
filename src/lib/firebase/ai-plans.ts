@@ -6,6 +6,7 @@ import {
   query,
   serverTimestamp,
   type DocumentData,
+  type Firestore,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db, firebaseEnabled } from "./client";
@@ -41,19 +42,24 @@ export type AiPlanRecord = {
   createdAt: string;
 };
 
-export async function saveAiPlan(input: SavePlanInput) {
+const ensureReady = async (): Promise<Firestore> => {
   if (!firebaseEnabled || !db) {
     throw new Error("Firebase not configured");
   }
 
   await ensureAnonymousAuth();
+  return db;
+};
+
+export async function saveAiPlan(input: SavePlanInput) {
+  const firestore = await ensureReady();
 
   const planText = input.plan.trim();
   if (!planText) {
     throw new Error("Plan content is empty.");
   }
 
-  return addDoc(collection(db, "aiPlans"), {
+  return addDoc(collection(firestore, "aiPlans"), {
     type: input.type,
     plan: planText,
     profile: input.profile,
@@ -77,13 +83,12 @@ function mapAiPlan(doc: QueryDocumentSnapshot<DocumentData>): AiPlanRecord {
 }
 
 export async function getAiPlans() {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
+  const firestore = await ensureReady();
 
-  await ensureAnonymousAuth();
-
-  const plansQuery = query(collection(db, "aiPlans"), orderBy("createdAt", "desc"));
+  const plansQuery = query(
+    collection(firestore, "aiPlans"),
+    orderBy("createdAt", "desc")
+  );
   const snapshot = await getDocs(plansQuery);
   return snapshot.docs.map(mapAiPlan);
 }

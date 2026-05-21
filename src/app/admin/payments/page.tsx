@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ActionButton from "@/components/action-button";
 import SectionHeader from "@/components/section-header";
@@ -11,7 +11,7 @@ import { deletePayment, getPayments, type PaymentRecord } from "@/lib/firebase/p
 type DateFilter = "all" | "today" | "7d" | "30d" | "custom";
 const PAGE_SIZE = 10;
 
-export default function AdminPaymentsPage() {
+function AdminPaymentsContent() {
   const LOAD_TIMEOUT_MS = 8000;
   const searchParams = useSearchParams();
   const [members, setMembers] = useState<MemberRecord[]>([]);
@@ -406,5 +406,19 @@ export default function AdminPaymentsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminPaymentsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="glass-panel mx-auto mt-8 max-w-3xl rounded-2xl p-6 text-sm text-slate-300">
+          Loading payments...
+        </div>
+      }
+    >
+      <AdminPaymentsContent />
+    </Suspense>
   );
 }

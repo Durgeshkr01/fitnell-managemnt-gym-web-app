@@ -12,6 +12,7 @@ import {
   where,
   writeBatch,
   type DocumentData,
+  type Firestore,
   type QueryDocumentSnapshot,
   type Timestamp,
 } from "firebase/firestore";
@@ -51,11 +52,12 @@ const mapAttendance = (docSnap: QueryDocumentSnapshot<DocumentData>) => {
   } satisfies AttendanceRecord;
 };
 
-const ensureReady = async () => {
+const ensureReady = async (): Promise<Firestore> => {
   if (!firebaseEnabled || !db) {
     throw new Error("Firebase not configured");
   }
   await ensureAnonymousAuth();
+  return db;
 };
 
 const chunkList = <T,>(items: T[], size: number) => {
@@ -67,9 +69,9 @@ const chunkList = <T,>(items: T[], size: number) => {
 };
 
 export async function getActiveAttendance() {
-  await ensureReady();
+  const firestore = await ensureReady();
   const attendanceQuery = query(
-    collection(db, "attendance"),
+    collection(firestore, "attendance"),
     where("status", "==", "in"),
     orderBy("checkInAt", "desc")
   );
@@ -78,9 +80,9 @@ export async function getActiveAttendance() {
 }
 
 export async function getTodayAttendance() {
-  await ensureReady();
+  const firestore = await ensureReady();
   const attendanceQuery = query(
-    collection(db, "attendance"),
+    collection(firestore, "attendance"),
     orderBy("checkInAt", "desc"),
     limit(100)
   );
@@ -94,10 +96,10 @@ export async function checkInMember(params: {
   rollNumber?: string | null;
   checkedInBy: "admin" | "trainer";
 }) {
-  await ensureReady();
+  const firestore = await ensureReady();
 
   const existingQuery = query(
-    collection(db, "attendance"),
+    collection(firestore, "attendance"),
     where("memberId", "==", params.memberId),
     where("status", "==", "in"),
     limit(1)
@@ -107,7 +109,7 @@ export async function checkInMember(params: {
     return mapAttendance(existing.docs[0]);
   }
 
-  const docRef = await addDoc(collection(db, "attendance"), {
+  const docRef = await addDoc(collection(firestore, "attendance"), {
     memberId: params.memberId,
     memberName: params.memberName,
     rollNumber: params.rollNumber ?? null,
@@ -118,20 +120,23 @@ export async function checkInMember(params: {
   });
 
   const created = await getDocs(
-    query(collection(db, "attendance"), where("__name__", "==", docRef.id))
+    query(
+      collection(firestore, "attendance"),
+      where("__name__", "==", docRef.id)
+    )
   );
   return created.docs.length ? mapAttendance(created.docs[0]) : null;
 }
 
 export async function checkOutMember(attendanceId: string) {
-  await ensureReady();
+  const firestore = await ensureReady();
 
   const trimmedId = attendanceId.trim();
   if (!trimmedId) {
     throw new Error("Attendance ID is required");
   }
 
-  await updateDoc(doc(db, "attendance", trimmedId), {
+  await updateDoc(doc(firestore, "attendance", trimmedId), {
     status: "out",
     checkOutAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -143,7 +148,7 @@ export async function deleteAttendanceRecords(recordIds: string[]) {
     return;
   }
 
-  await ensureReady();
+  const firestore = await ensureReady();
 
   const trimmedIds = recordIds.map((id) => id.trim()).filter(Boolean);
   if (!trimmedIds.length) {
@@ -153,9 +158,9 @@ export async function deleteAttendanceRecords(recordIds: string[]) {
   const batches = chunkList(trimmedIds, 450);
 
   for (const batchIds of batches) {
-    const batch = writeBatch(db);
+    const batch = writeBatch(firestore);
     batchIds.forEach((id) => {
-      batch.delete(doc(db, "attendance", id));
+      batch.delete(doc(firestore, "attendance", id));
     });
     await batch.commit();
   }
@@ -167,8 +172,8 @@ export async function deleteAttendanceRecord(recordId: string) {
     return;
   }
 
-  await ensureReady();
-  await deleteDoc(doc(db, "attendance", trimmedId));
+  const firestore = await ensureReady();
+  await deleteDoc(doc(firestore, "attendance", trimmedId));
 }
 
 export async function autoCheckoutStale() {

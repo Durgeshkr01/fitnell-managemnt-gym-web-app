@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ActionButton from "@/components/action-button";
 import MemberCard from "@/components/member-card";
@@ -13,7 +13,7 @@ import {
   getActiveAttendance,
 } from "@/lib/firebase/attendance";
 
-export default function TrainerMembersPage() {
+function TrainerMembersContent() {
   const searchParams = useSearchParams();
   const [members, setMembers] = useState<MemberRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -218,5 +218,19 @@ export default function TrainerMembersPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function TrainerMembersPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="glass-panel mx-auto mt-8 max-w-3xl rounded-2xl p-6 text-sm text-slate-300">
+          Loading members...
+        </div>
+      }
+    >
+      <TrainerMembersContent />
+    </Suspense>
   );
 }

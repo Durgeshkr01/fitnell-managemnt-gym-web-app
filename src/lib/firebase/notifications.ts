@@ -13,6 +13,7 @@ import {
   where,
   writeBatch,
   type DocumentData,
+  type Firestore,
   type QueryDocumentSnapshot,
   type Timestamp,
 } from "firebase/firestore";
@@ -65,14 +66,31 @@ const mapNotification = (docSnap: QueryDocumentSnapshot<DocumentData>) => {
   } satisfies NotificationRecord;
 };
 
-export async function addNotification(input: NotificationInput) {
+const ensureReady = async (): Promise<Firestore> => {
   if (!firebaseEnabled || !db) {
-    return;
+    throw new Error("Firebase not configured");
   }
 
   await ensureAnonymousAuth();
+  return db;
+};
 
-  return addDoc(collection(db, "notifications"), {
+const ensureReadyOptional = async (): Promise<Firestore | null> => {
+  if (!firebaseEnabled || !db) {
+    return null;
+  }
+
+  await ensureAnonymousAuth();
+  return db;
+};
+
+export async function addNotification(input: NotificationInput) {
+  const firestore = await ensureReadyOptional();
+  if (!firestore) {
+    return;
+  }
+
+  return addDoc(collection(firestore, "notifications"), {
     title: input.title,
     detail: input.detail,
     category: input.category ?? "General",
@@ -84,20 +102,19 @@ export async function addNotification(input: NotificationInput) {
 }
 
 const createKeyedNotificationIfMissing = async (input: NotificationInput) => {
-  if (!firebaseEnabled || !db) {
-    return;
-  }
-
   const trimmedKey = input.key?.trim();
   if (!trimmedKey) {
     await addNotification({ ...input, key: null });
     return;
   }
 
-  await ensureAnonymousAuth();
+  const firestore = await ensureReadyOptional();
+  if (!firestore) {
+    return;
+  }
 
-  await runTransaction(db, async (transaction) => {
-    const ref = doc(db, "notifications", trimmedKey);
+  await runTransaction(firestore, async (transaction) => {
+    const ref = doc(firestore, "notifications", trimmedKey);
     const existing = await transaction.get(ref);
     if (existing.exists()) {
       return;
@@ -116,14 +133,10 @@ const createKeyedNotificationIfMissing = async (input: NotificationInput) => {
 };
 
 export async function getNotifications(maxCount = 60) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   const notificationsQuery = query(
-    collection(db, "notifications"),
+    collection(firestore, "notifications"),
     orderBy("createdAt", "desc"),
     limit(maxCount)
   );
@@ -132,14 +145,10 @@ export async function getNotifications(maxCount = 60) {
 }
 
 export async function getUnreadNotificationsCount() {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   const unreadQuery = query(
-    collection(db, "notifications"),
+    collection(firestore, "notifications"),
     where("read", "==", false)
   );
   const snapshot = await getDocs(unreadQuery);
@@ -147,14 +156,10 @@ export async function getUnreadNotificationsCount() {
 }
 
 export async function markAllNotificationsRead() {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   const unreadQuery = query(
-    collection(db, "notifications"),
+    collection(firestore, "notifications"),
     where("read", "==", false)
   );
   const snapshot = await getDocs(unreadQuery);
@@ -162,7 +167,7 @@ export async function markAllNotificationsRead() {
     return;
   }
 
-  const batch = writeBatch(db);
+  const batch = writeBatch(firestore);
   snapshot.docs.forEach((docSnap) => {
     batch.update(docSnap.ref, { read: true });
   });
@@ -170,18 +175,14 @@ export async function markAllNotificationsRead() {
 }
 
 export async function clearAllNotifications() {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
+  const firestore = await ensureReady();
 
-  await ensureAnonymousAuth();
-
-  const snapshot = await getDocs(query(collection(db, "notifications")));
+  const snapshot = await getDocs(query(collection(firestore, "notifications")));
   if (snapshot.empty) {
     return;
   }
 
-  const batch = writeBatch(db);
+  const batch = writeBatch(firestore);
   snapshot.docs.forEach((docSnap) => {
     batch.delete(docSnap.ref);
   });
@@ -189,33 +190,25 @@ export async function clearAllNotifications() {
 }
 
 export async function markNotificationRead(notificationId: string) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedId = notificationId.trim();
   if (!trimmedId) {
     return;
   }
 
-  await ensureAnonymousAuth();
-  await updateDoc(doc(db, "notifications", trimmedId), { read: true });
+  const firestore = await ensureReady();
+  await updateDoc(doc(firestore, "notifications", trimmedId), { read: true });
 }
 
 export async function markNotificationsReadByKey(notificationKey: string) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedKey = notificationKey.trim();
   if (!trimmedKey) {
     return;
   }
 
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   const keyedQuery = query(
-    collection(db, "notifications"),
+    collection(firestore, "notifications"),
     where("key", "==", trimmedKey)
   );
   const snapshot = await getDocs(keyedQuery);
@@ -223,7 +216,7 @@ export async function markNotificationsReadByKey(notificationKey: string) {
     return;
   }
 
-  const batch = writeBatch(db);
+  const batch = writeBatch(firestore);
   snapshot.docs.forEach((docSnap) => {
     batch.update(docSnap.ref, { read: true });
   });
@@ -239,22 +232,21 @@ const chunkList = <T,>(items: T[], size: number) => {
 };
 
 const buildKeySet = async (keys: string[]) => {
-  if (!firebaseEnabled || !db) {
-    return new Set<string>();
-  }
-
   if (keys.length === 0) {
     return new Set<string>();
   }
 
-  await ensureAnonymousAuth();
+  const firestore = await ensureReadyOptional();
+  if (!firestore) {
+    return new Set<string>();
+  }
 
   const keySet = new Set<string>();
   const batches = chunkList(keys, 10);
 
   for (const batchKeys of batches) {
     const snapshot = await getDocs(
-      query(collection(db, "notifications"), where("key", "in", batchKeys))
+      query(collection(firestore, "notifications"), where("key", "in", batchKeys))
     );
     snapshot.docs.forEach((docSnap) => {
       const key = docSnap.data().key;
@@ -281,7 +273,8 @@ export async function syncMemberNotifications(members: {
   dues?: string | null;
   planEndDate?: string | null;
 }[]) {
-  if (!firebaseEnabled || !db) {
+  const firestore = await ensureReadyOptional();
+  if (!firestore) {
     return;
   }
 

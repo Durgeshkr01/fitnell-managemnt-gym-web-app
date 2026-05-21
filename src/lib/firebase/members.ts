@@ -11,6 +11,7 @@ import {
   updateDoc,
   type QueryConstraint,
   type DocumentData,
+  type Firestore,
   type QueryDocumentSnapshot,
   type Timestamp,
   where,
@@ -52,6 +53,15 @@ export type MemberRecord = {
   isNewAdmission?: boolean;
   dateOfBirth?: string | null;
   phone?: string;
+};
+
+const ensureReady = async (): Promise<Firestore> => {
+  if (!firebaseEnabled || !db) {
+    throw new Error("Firebase not configured");
+  }
+
+  await ensureAnonymousAuth();
+  return db;
 };
 
 function parseDate(value?: string | null) {
@@ -128,27 +138,21 @@ function getSixMonthsAgo() {
 }
 
 async function purgeExpiredMembers() {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   const cutoff = toDateInputValue(getSixMonthsAgo());
   const filters: QueryConstraint[] = [where("planEndDate", "<", cutoff)];
-  const snapshot = await getDocs(query(collection(db, "members"), ...filters));
+  const snapshot = await getDocs(
+    query(collection(firestore, "members"), ...filters)
+  );
 
   for (const docSnap of snapshot.docs) {
-    await deleteDoc(doc(db, "members", docSnap.id));
+    await deleteDoc(doc(firestore, "members", docSnap.id));
   }
 }
 
 export async function addMember(input: MemberInput) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   const today = new Date();
   const joinDate = input.joinDate?.trim() || toDateInputValue(today);
@@ -157,7 +161,7 @@ export async function addMember(input: MemberInput) {
   const planEndDate =
     input.planEndDate?.trim() || toDateInputValue(addOneMonth(parsedStart));
 
-  return addDoc(collection(db, "members"), {
+  return addDoc(collection(firestore, "members"), {
     name: input.name,
     rollNumber: input.rollNumber?.trim() || null,
     gender: input.gender,
@@ -237,35 +241,30 @@ function mapMember(doc: QueryDocumentSnapshot<DocumentData>) {
 }
 
 export async function getMembers() {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   await purgeExpiredMembers();
 
-  const membersQuery = query(collection(db, "members"), orderBy("createdAt", "desc"));
+  const membersQuery = query(
+    collection(firestore, "members"),
+    orderBy("createdAt", "desc")
+  );
   const snapshot = await getDocs(membersQuery);
   return snapshot.docs.map(mapMember);
 }
 
 export async function getMembersByTrainerCode(trainerCode: string) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const normalized = trainerCode.trim();
   if (!normalized) {
     return [];
   }
 
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   await purgeExpiredMembers();
 
   const membersQuery = query(
-    collection(db, "members"),
+    collection(firestore, "members"),
     where("trainerCode", "==", normalized),
     orderBy("createdAt", "desc")
   );
@@ -274,18 +273,13 @@ export async function getMembersByTrainerCode(trainerCode: string) {
 }
 
 export async function getMemberById(memberId: string) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedId = memberId.trim();
   if (!trimmedId) {
     return null;
   }
 
-  await ensureAnonymousAuth();
-
-  const snapshot = await getDoc(doc(db, "members", trimmedId));
+  const firestore = await ensureReady();
+  const snapshot = await getDoc(doc(firestore, "members", trimmedId));
   if (!snapshot.exists()) {
     return null;
   }
@@ -294,17 +288,13 @@ export async function getMemberById(memberId: string) {
 }
 
 export async function deleteMember(memberId: string) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedId = memberId.trim();
   if (!trimmedId) {
     throw new Error("Member ID is required");
   }
 
-  await ensureAnonymousAuth();
-  await deleteDoc(doc(db, "members", trimmedId));
+  const firestore = await ensureReady();
+  await deleteDoc(doc(firestore, "members", trimmedId));
 }
 
 type PaymentUpdateInput = {
@@ -335,18 +325,13 @@ export async function updateMemberPayment(
   memberId: string,
   input: PaymentUpdateInput
 ) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedId = memberId.trim();
   if (!trimmedId) {
     throw new Error("Member ID is required");
   }
 
-  await ensureAnonymousAuth();
-
-  await updateDoc(doc(db, "members", trimmedId), {
+  const firestore = await ensureReady();
+  await updateDoc(doc(firestore, "members", trimmedId), {
     planStartDate: input.planStartDate,
     planEndDate: input.planEndDate,
     planAmount: input.planAmount,
@@ -363,18 +348,13 @@ export async function updateMemberProfile(
   memberId: string,
   input: MemberUpdateInput
 ) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedId = memberId.trim();
   if (!trimmedId) {
     throw new Error("Member ID is required");
   }
 
-  await ensureAnonymousAuth();
-
-  await updateDoc(doc(db, "members", trimmedId), {
+  const firestore = await ensureReady();
+  await updateDoc(doc(firestore, "members", trimmedId), {
     name: input.name,
     rollNumber: input.rollNumber,
     gender: input.gender,
@@ -397,18 +377,13 @@ type ClearDuesInput = {
 };
 
 export async function clearMemberDues(memberId: string, input: ClearDuesInput) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedId = memberId.trim();
   if (!trimmedId) {
     throw new Error("Member ID is required");
   }
 
-  await ensureAnonymousAuth();
-
-  await updateDoc(doc(db, "members", trimmedId), {
+  const firestore = await ensureReady();
+  await updateDoc(doc(firestore, "members", trimmedId), {
     dues: "0",
     duesPaidAmount: input.amount,
     duesPaidOn: input.paidOn,

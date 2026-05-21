@@ -8,6 +8,7 @@ import {
   query,
   serverTimestamp,
   type DocumentData,
+  type Firestore,
   type QueryDocumentSnapshot,
   type Timestamp,
 } from "firebase/firestore";
@@ -28,6 +29,15 @@ export type PaymentRecord = PaymentInput & {
   createdAt?: string | null;
 };
 
+const ensureReady = async (): Promise<Firestore> => {
+  if (!firebaseEnabled || !db) {
+    throw new Error("Firebase not configured");
+  }
+
+  await ensureAnonymousAuth();
+  return db;
+};
+
 const mapPayment = (doc: QueryDocumentSnapshot<DocumentData>) => {
   const data = doc.data();
   const createdAt = data.createdAt as Timestamp | undefined;
@@ -45,13 +55,9 @@ const mapPayment = (doc: QueryDocumentSnapshot<DocumentData>) => {
 };
 
 export async function addPaymentRecord(input: PaymentInput) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
+  const firestore = await ensureReady();
 
-  await ensureAnonymousAuth();
-
-  return addDoc(collection(db, "payments"), {
+  return addDoc(collection(firestore, "payments"), {
     memberId: input.memberId,
     memberName: input.memberName,
     rollNumber: input.rollNumber ?? null,
@@ -63,14 +69,10 @@ export async function addPaymentRecord(input: PaymentInput) {
 }
 
 export async function getPayments() {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   const paymentsQuery = query(
-    collection(db, "payments"),
+    collection(firestore, "payments"),
     orderBy("createdAt", "desc")
   );
   const snapshot = await getDocs(paymentsQuery);
@@ -78,15 +80,11 @@ export async function getPayments() {
 }
 
 export async function deletePayment(paymentId: string) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedId = paymentId.trim();
   if (!trimmedId) {
     throw new Error("Payment ID is required");
   }
 
-  await ensureAnonymousAuth();
-  await deleteDoc(doc(db, "payments", trimmedId));
+  const firestore = await ensureReady();
+  await deleteDoc(doc(firestore, "payments", trimmedId));
 }

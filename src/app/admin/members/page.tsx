@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ActionButton from "@/components/action-button";
 import ClearDuesModal from "@/components/clear-dues-modal";
@@ -39,7 +39,7 @@ const filters = [
 
 const PAGE_SIZE = 10;
 
-export default function AdminMembersPage() {
+function AdminMembersContent() {
   const searchParams = useSearchParams();
   const [members, setMembers] = useState<MemberRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -817,5 +817,19 @@ export default function AdminMembersPage() {
       ) : null}
 
     </div>
+  );
+}
+
+export default function AdminMembersPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="glass-panel mx-auto mt-8 max-w-3xl rounded-2xl p-6 text-sm text-slate-300">
+          Loading members...
+        </div>
+      }
+    >
+      <AdminMembersContent />
+    </Suspense>
   );
 }

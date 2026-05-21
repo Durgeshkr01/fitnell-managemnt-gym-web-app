@@ -9,6 +9,7 @@ import {
   updateDoc,
   doc,
   type DocumentData,
+  type Firestore,
   type QueryDocumentSnapshot,
   type Timestamp,
 } from "firebase/firestore";
@@ -32,6 +33,15 @@ type EnquiryInput = {
   notes?: string | null;
 };
 
+const ensureReady = async (): Promise<Firestore> => {
+  if (!firebaseEnabled || !db) {
+    throw new Error("Firebase not configured");
+  }
+
+  await ensureAnonymousAuth();
+  return db;
+};
+
 const mapEnquiry = (docSnap: QueryDocumentSnapshot<DocumentData>) => {
   const data = docSnap.data();
   const createdAt = data.createdAt as Timestamp | undefined;
@@ -50,16 +60,12 @@ const mapEnquiry = (docSnap: QueryDocumentSnapshot<DocumentData>) => {
 };
 
 export async function addEnquiry(input: EnquiryInput) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   const trimmedName = input.name.trim();
   const trimmedPhone = input.phone.trim();
 
-  return addDoc(collection(db, "enquiries"), {
+  return addDoc(collection(firestore, "enquiries"), {
     name: trimmedName,
     phone: trimmedPhone,
     notes: input.notes?.trim() || null,
@@ -69,14 +75,10 @@ export async function addEnquiry(input: EnquiryInput) {
 }
 
 export async function getEnquiries() {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
   const enquiriesQuery = query(
-    collection(db, "enquiries"),
+    collection(firestore, "enquiries"),
     orderBy("createdAt", "desc")
   );
   const snapshot = await getDocs(enquiriesQuery);
@@ -84,18 +86,14 @@ export async function getEnquiries() {
 }
 
 export async function markEnquiryJoined(enquiryId: string, memberId?: string) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedId = enquiryId.trim();
   if (!trimmedId) {
     throw new Error("Enquiry ID is required");
   }
 
-  await ensureAnonymousAuth();
+  const firestore = await ensureReady();
 
-  await updateDoc(doc(db, "enquiries", trimmedId), {
+  await updateDoc(doc(firestore, "enquiries", trimmedId), {
     status: "joined",
     joinedAt: serverTimestamp(),
     memberId: memberId ?? null,
@@ -103,15 +101,11 @@ export async function markEnquiryJoined(enquiryId: string, memberId?: string) {
 }
 
 export async function deleteEnquiry(enquiryId: string) {
-  if (!firebaseEnabled || !db) {
-    throw new Error("Firebase not configured");
-  }
-
   const trimmedId = enquiryId.trim();
   if (!trimmedId) {
     throw new Error("Enquiry ID is required");
   }
 
-  await ensureAnonymousAuth();
-  await deleteDoc(doc(db, "enquiries", trimmedId));
+  const firestore = await ensureReady();
+  await deleteDoc(doc(firestore, "enquiries", trimmedId));
 }
