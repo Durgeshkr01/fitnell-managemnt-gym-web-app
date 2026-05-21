@@ -143,7 +143,6 @@ function TrainerMembersContent() {
 
       return true;
     });
-    });
   }, [members, activeFilter, searchText]);
 
   const sortedMembers = useMemo(() => {
