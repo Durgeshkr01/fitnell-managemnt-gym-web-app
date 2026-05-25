@@ -10,12 +10,14 @@ import SiteFooter from "@/components/site-footer";
 import { formatDateTimeDisplay } from "@/lib/date-utils";
 import {
   getMemberById,
+  getMembersByPhone,
   type MemberRecord,
 } from "@/lib/firebase/members";
 import { getPaymentsByMember, type PaymentRecord } from "@/lib/firebase/payments";
 
 export default function MemberPortalPage() {
   const [member, setMember] = useState<MemberRecord | null>(null);
+  const [members, setMembers] = useState<MemberRecord[]>([]);
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,22 +28,43 @@ export default function MemberPortalPage() {
     const loadMember = async () => {
       try {
         const memberId = window.localStorage.getItem("memberId");
-        if (!memberId) {
+        const memberPhone = window.localStorage.getItem("memberPhone");
+        if (!memberId && !memberPhone) {
           throw new Error("Member session not found.");
         }
 
-        const [memberData, paymentData] = await Promise.all([
-          getMemberById(memberId),
-          getPaymentsByMember(memberId),
-        ]);
+        if (memberId) {
+          const [memberData, paymentData] = await Promise.all([
+            getMemberById(memberId),
+            getPaymentsByMember(memberId),
+          ]);
 
-        if (!memberData) {
+          if (!memberData) {
+            throw new Error("Member profile not found.");
+          }
+
+          if (isActive) {
+            setMember(memberData);
+            setMembers([memberData]);
+            setPayments(paymentData);
+          }
+          return;
+        }
+
+        const matchedMembers = await getMembersByPhone(memberPhone ?? "");
+        if (matchedMembers.length === 0) {
           throw new Error("Member profile not found.");
         }
 
+        const paymentsList = await Promise.all(
+          matchedMembers.map((record) => getPaymentsByMember(record.id))
+        );
+        const mergedPayments = paymentsList.flat();
+
         if (isActive) {
-          setMember(memberData);
-          setPayments(paymentData);
+          setMembers(matchedMembers);
+          setMember(matchedMembers[0] ?? null);
+          setPayments(mergedPayments);
         }
       } catch (loadError) {
         if (isActive) {
@@ -106,6 +129,12 @@ export default function MemberPortalPage() {
           {loading ? (
             <div className="glass-panel rounded-2xl p-6 text-sm text-slate-300">
               Loading member details...
+            </div>
+          ) : members.length > 1 ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {members.map((entry) => (
+                <MemberCard key={entry.id} member={entry} readOnly />
+              ))}
             </div>
           ) : member ? (
             <MemberCard member={member} readOnly />

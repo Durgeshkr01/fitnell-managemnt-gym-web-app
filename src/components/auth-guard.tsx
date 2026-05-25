@@ -18,6 +18,7 @@ export default function AuthGuard({
     const hasAdmin = window.localStorage.getItem("adminAuthed") === "true";
     const trainerCode = window.localStorage.getItem("trainerCode");
     const memberId = window.localStorage.getItem("memberId");
+    const memberPhone = window.localStorage.getItem("memberPhone");
 
     if (role === "admin") {
       if (storedRole === "admin" && hasAdmin) {
@@ -30,7 +31,7 @@ export default function AuthGuard({
         return;
       }
     } else if (role === "member") {
-      if (storedRole === "member" && memberId) {
+      if (storedRole === "member" && (memberId || memberPhone)) {
         setReady(true);
         return;
       }

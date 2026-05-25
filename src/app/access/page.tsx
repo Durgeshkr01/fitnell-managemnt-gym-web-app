@@ -6,7 +6,7 @@ import Image from "next/image";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db, firebaseEnabled } from "@/lib/firebase/client";
 import { ensureAnonymousAuth } from "@/lib/firebase/ensure-auth";
-import { getMemberByPhone } from "@/lib/firebase/members";
+import { getMembersByPhone } from "@/lib/firebase/members";
 
 type Role = "admin" | "trainer" | "member";
 
@@ -96,8 +96,8 @@ export default function AccessPage() {
           return;
         }
 
-        const member = await getMemberByPhone(phone);
-        if (!member) {
+        const members = await getMembersByPhone(phone);
+        if (members.length === 0) {
           setError("No member found for this mobile number.");
           setLoading(false);
           return;
@@ -105,9 +105,14 @@ export default function AccessPage() {
 
         if (typeof window !== "undefined") {
           window.localStorage.setItem("authRole", "member");
-          window.localStorage.setItem("memberId", member.id);
-          window.localStorage.setItem("memberPhone", member.phone ?? phone);
-          window.localStorage.setItem("memberName", member.name ?? "Member");
+          window.localStorage.setItem("memberPhone", phone);
+          if (members.length === 1) {
+            window.localStorage.setItem("memberId", members[0].id);
+            window.localStorage.setItem("memberName", members[0].name ?? "Member");
+          } else {
+            window.localStorage.removeItem("memberId");
+            window.localStorage.setItem("memberName", "Member");
+          }
         }
 
         router.push("/member");

@@ -101,9 +101,23 @@ export default function DatePicker({
 
   const formatInputValue = (rawValue: string) => {
     const digits = rawValue.replace(/\D/g, "").slice(0, 8);
-    const day = digits.slice(0, 2);
-    const month = digits.slice(2, 4);
+    let day = digits.slice(0, 2);
+    let month = digits.slice(2, 4);
     const year = digits.slice(4, 8);
+
+    if (day.length === 2) {
+      const dayNum = Number(day);
+      if (dayNum > 31) {
+        day = "31";
+      }
+    }
+
+    if (month.length === 2) {
+      const monthNum = Number(month);
+      if (monthNum > 12) {
+        month = "12";
+      }
+    }
 
     if (digits.length <= 2) {
       return day;

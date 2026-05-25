@@ -313,6 +313,47 @@ export async function getMemberByPhone(phone: string) {
   return null;
 }
 
+export async function getMembersByPhone(phone: string) {
+  const trimmed = phone.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  const firestore = await ensureReady();
+  const normalizedTarget = normalizePhone(trimmed);
+  if (!normalizedTarget) {
+    return [];
+  }
+
+  const snapshot = await getDocs(collection(firestore, "members"));
+  return snapshot.docs
+    .map((docSnap) => ({ docSnap, data: docSnap.data() }))
+    .filter(({ data }) => {
+      const storedPhone = typeof data.phone === "string" ? data.phone : "";
+      return normalizePhone(storedPhone) === normalizedTarget;
+    })
+    .map(({ docSnap, data }) => mapMemberData(docSnap.id, data));
+}
+
+export async function getMemberByRollNumber(rollNumber: string) {
+  const trimmed = rollNumber.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const firestore = await ensureReady();
+  const snapshot = await getDocs(collection(firestore, "members"));
+  for (const docSnap of snapshot.docs) {
+    const data = docSnap.data();
+    const storedRoll = typeof data.rollNumber === "string" ? data.rollNumber : "";
+    if (storedRoll.trim() === trimmed) {
+      return mapMemberData(docSnap.id, data);
+    }
+  }
+
+  return null;
+}
+
 export async function deleteMember(memberId: string) {
   const trimmedId = memberId.trim();
   if (!trimmedId) {

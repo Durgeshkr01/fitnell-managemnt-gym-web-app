@@ -205,6 +205,32 @@ button {
   }
 }
 
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.6;
+  }
+  60% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+@keyframes type-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 @keyframes pie-sweep {
   from {
     stroke-dasharray: 0 100;
@@ -237,6 +263,32 @@ button {
   }
   .animate-pulse-soft {
     animation: pulse-soft 2.6s ease-in-out infinite alternate;
+  }
+  .animate-type-reveal {
+    animation: type-reveal 1.2s ease-out both;
+  }
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shine::after {
+    content: "";
+    position: absolute;
+    top: -30%;
+    left: -40%;
+    width: 40%;
+    height: 160%;
+    background: linear-gradient(
+      120deg,
+      transparent,
+      rgba(255, 255, 255, 0.35),
+      transparent
+    );
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  .btn-shine:hover::after {
+    animation: shine-sweep 0.9s ease-out;
   }
   .animate-pie-sweep {
     animation: pie-sweep 1.2s ease-out both;

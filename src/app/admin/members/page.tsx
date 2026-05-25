@@ -399,6 +399,11 @@ function AdminMembersContent() {
 
     let successCount = 0;
     let skippedCount = 0;
+    const rollIndex = new Set(
+      members
+        .map((member) => String(member.rollNumber ?? "").trim())
+        .filter(Boolean)
+    );
 
     const getFirstValue = (
       normalized: Record<string, unknown>,
@@ -462,6 +467,11 @@ function AdminMembersContent() {
         continue;
       }
 
+      if (rollIndex.has(rollNumber)) {
+        skippedCount += 1;
+        continue;
+      }
+
       const resolvedJoinDate = joinDate ?? planStartDate ?? null;
       const resolvedPlanStart = planStartDate ?? joinDate ?? null;
 
@@ -477,7 +487,7 @@ function AdminMembersContent() {
           ? addDaysToIso(resolvedPlanStart, resolvedPlanDuration)
           : resolvedPlanStart;
 
-      await addMember({
+      const result = await addMember({
         name,
         rollNumber,
         gender,
@@ -492,6 +502,17 @@ function AdminMembersContent() {
         planDurationDays: resolvedPlanDuration,
         dues: dues || "0",
       });
+      if (result?.id) {
+        await addPaymentRecord({
+          memberId: result.id,
+          memberName: name,
+          rollNumber,
+          amount: Number.isNaN(planAmount) || planAmount <= 0 ? 500 : planAmount,
+          type: "Admission",
+          paidOn: resolvedJoinDate,
+        });
+      }
+      rollIndex.add(rollNumber);
       successCount += 1;
     }
 
@@ -672,6 +693,17 @@ function AdminMembersContent() {
     setError(null);
 
     try {
+      const duplicateRoll = members.find(
+        (item) =>
+          item.id !== profileMember.id &&
+          String(item.rollNumber ?? "").trim() === payload.rollNumber.trim()
+      );
+      if (duplicateRoll) {
+        setError("Roll number already exists.");
+        setSavingProfile(false);
+        return;
+      }
+
       await updateMemberProfile(profileMember.id, payload);
       setMembers((prev) =>
         prev.map((item) =>

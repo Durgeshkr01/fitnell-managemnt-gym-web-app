@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import DatePicker from "@/components/date-picker";
 import { addDaysToIso, diffDays, formatDateDisplay, toIsoDate } from "@/lib/date-utils";
-import { addMember } from "@/lib/firebase/members";
+import { addMember, getMemberByRollNumber } from "@/lib/firebase/members";
+import { addPaymentRecord } from "@/lib/firebase/payments";
 import { useAction } from "./action-provider";
 import { fillTemplate, resolveTemplate } from "@/lib/messages";
 import { useMessageTemplates } from "@/lib/use-message-templates";
@@ -137,6 +138,13 @@ export default function AddMemberModal({
     setSaving(true);
 
     try {
+      const existingRoll = await getMemberByRollNumber(trimmedRollNumber);
+      if (existingRoll) {
+        setError("Roll number already exists.");
+        setSaving(false);
+        return;
+      }
+
       const result = await addMember({
         name: trimmedName,
         rollNumber: trimmedRollNumber,
@@ -157,6 +165,16 @@ export default function AddMemberModal({
         phone: trimmedPhone,
         planAmount: planAmountNumber,
       });
+      if (result?.id) {
+        await addPaymentRecord({
+          memberId: result.id,
+          memberName: trimmedName,
+          rollNumber: trimmedRollNumber,
+          amount: planAmountNumber,
+          type: "Admission",
+          paidOn: form.joinDate,
+        });
+      }
       if (sendAdmissionMessage) {
         sendWhatsAppBill(trimmedPhone);
       }

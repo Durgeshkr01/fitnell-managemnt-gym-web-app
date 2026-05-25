@@ -21,7 +21,7 @@ type PaymentInput = {
   memberName: string;
   rollNumber?: string | null;
   amount: number;
-  type: "Payment Update" | "Dues Clear";
+  type: "Payment Update" | "Dues Clear" | "Admission";
   paidOn: string;
 };
 
@@ -49,7 +49,12 @@ const mapPayment = (doc: QueryDocumentSnapshot<DocumentData>) => {
     memberName: String(data.memberName ?? "Member"),
     rollNumber: typeof data.rollNumber === "string" ? data.rollNumber : null,
     amount: typeof data.amount === "number" ? data.amount : 0,
-    type: data.type === "Dues Clear" ? "Dues Clear" : "Payment Update",
+    type:
+      data.type === "Dues Clear"
+        ? "Dues Clear"
+        : data.type === "Admission"
+          ? "Admission"
+          : "Payment Update",
     paidOn: String(data.paidOn ?? ""),
     createdAt: createdAt ? createdAt.toDate().toISOString() : null,
   } satisfies PaymentRecord;
