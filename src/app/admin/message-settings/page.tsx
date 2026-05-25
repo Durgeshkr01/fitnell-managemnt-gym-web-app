@@ -93,7 +93,7 @@ export default function AdminMessageSettingsPage() {
           <div>
             <h3 className="font-display text-lg text-white">Templates</h3>
             <p className="text-sm text-slate-300">
-              Variables ko {{}} me use karo. Example: {{"{{name}}"}}, {{"{{planEnd}}"}}.
+              Variables ko {"{{ }}"} me use karo. Example: {"{{name}}"}, {"{{planEnd}}"}.
             </p>
             <p className="text-xs text-slate-400">
               Save ke baad naya template turant apply dekhne ke liye page reload kar lein.
