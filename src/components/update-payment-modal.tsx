@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import DatePicker from "@/components/date-picker";
 import {
   addDaysToIso,
+  formatDateDisplay,
   formatDateTimeDisplay,
   toIsoDate,
 } from "@/lib/date-utils";
@@ -22,6 +23,7 @@ type PaymentPayload = {
   dues: string;
   paidOn: string;
   planDurationDays: number | null;
+  sendBill: boolean;
 };
 
 type UpdatePaymentModalProps = {
@@ -58,6 +60,7 @@ export default function UpdatePaymentModal({
     paidOn: initialPaidOn,
     planDurationDays: initialDurationDays,
   });
+  const [sendBill, setSendBill] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -92,6 +95,7 @@ export default function UpdatePaymentModal({
       dues: form.dues,
       paidOn: form.paidOn || initialPaidOn,
       planDurationDays: durationDays,
+      sendBill,
     });
   };
 
@@ -215,6 +219,16 @@ export default function UpdatePaymentModal({
               required
             />
           </div>
+
+          <label className="flex items-center gap-2 text-xs text-slate-300">
+            <input
+              type="checkbox"
+              checked={sendBill}
+              onChange={(event) => setSendBill(event.target.checked)}
+              className="h-4 w-4 rounded border-white/20 bg-white/10 text-emerald-400"
+            />
+            Send bill on WhatsApp
+          </label>
 
           {error ? (
             <div className="rounded-xl border border-rose-400/40 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">

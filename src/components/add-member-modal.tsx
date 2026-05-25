@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DatePicker from "@/components/date-picker";
-import { addDaysToIso, diffDays, toIsoDate } from "@/lib/date-utils";
+import { addDaysToIso, diffDays, formatDateDisplay, toIsoDate } from "@/lib/date-utils";
 import { addMember } from "@/lib/firebase/members";
 import { useAction } from "./action-provider";
 
@@ -47,6 +47,7 @@ export default function AddMemberModal({
   const [form, setForm] = useState(buildInitialFormState());
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [sendAdmissionBill, setSendAdmissionBill] = useState(false);
   const isControlled = typeof isOpen === "boolean";
   const isDialogOpen = isControlled ? isOpen : openState;
 
@@ -62,6 +63,37 @@ export default function AddMemberModal({
     setForm(buildInitialFormState());
     setError(null);
     setSaving(false);
+    setSendAdmissionBill(false);
+  };
+
+  const normalizePhone = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length === 10) {
+      return `91${digits}`;
+    }
+    return digits;
+  };
+
+  const sendWhatsAppBill = (phone: string) => {
+    const normalized = normalizePhone(phone);
+    if (!normalized) {
+      return;
+    }
+
+    const message = [
+      "SG FITNESS EVOLUTION",
+      "Admission Receipt",
+      `Name: ${form.name.trim()}`,
+      `Roll: ${form.rollNumber.trim()}`,
+      `Join Date: ${formatDateDisplay(form.joinDate)}`,
+      `Plan: ${formatDateDisplay(form.planStartDate)} - ${formatDateDisplay(form.planEndDate)}`,
+      `Amount Paid: Rs ${form.planAmount}`,
+      "Dues: Rs 0",
+      "Thank you!",
+    ].join("\n");
+
+    const waLink = `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
+    window.location.href = waLink;
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -124,6 +156,9 @@ export default function AddMemberModal({
         phone: trimmedPhone,
         planAmount: planAmountNumber,
       });
+      if (sendAdmissionBill) {
+        sendWhatsAppBill(trimmedPhone);
+      }
       onSaved?.(result?.id);
       closeModal();
     } catch (submitError) {
@@ -202,6 +237,16 @@ export default function AddMemberModal({
                 </div>
                 <div />
               </div>
+
+              <label className="flex items-center gap-2 text-xs text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={sendAdmissionBill}
+                  onChange={(event) => setSendAdmissionBill(event.target.checked)}
+                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-emerald-400"
+                />
+                Send admission bill on WhatsApp
+              </label>
               <div>
                 <label className="text-xs uppercase tracking-[0.3em] text-slate-400">
                   Roll Number

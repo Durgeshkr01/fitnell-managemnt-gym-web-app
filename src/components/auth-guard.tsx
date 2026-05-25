@@ -7,7 +7,7 @@ export default function AuthGuard({
   role,
   children,
 }: {
-  role: "admin" | "trainer";
+  role: "admin" | "trainer" | "member";
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -17,14 +17,20 @@ export default function AuthGuard({
     const storedRole = window.localStorage.getItem("authRole");
     const hasAdmin = window.localStorage.getItem("adminAuthed") === "true";
     const trainerCode = window.localStorage.getItem("trainerCode");
+    const memberId = window.localStorage.getItem("memberId");
 
     if (role === "admin") {
       if (storedRole === "admin" && hasAdmin) {
         setReady(true);
         return;
       }
-    } else {
+    } else if (role === "trainer") {
       if (storedRole === "trainer" && trainerCode) {
+        setReady(true);
+        return;
+      }
+    } else if (role === "member") {
+      if (storedRole === "member" && memberId) {
         setReady(true);
         return;
       }

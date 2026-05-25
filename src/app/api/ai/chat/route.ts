@@ -12,7 +12,7 @@ type ChatRequest = {
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const DEFAULT_MODEL = "llama-3.1-8b-instant";
 
-const SYSTEM_PROMPT = `You are SG Fitness AI. You help admins and trainers by:
+const SYSTEM_PROMPT = `You are SG Fitness AI. You help admins, trainers, and members by:
 - Answering fitness, gym operations, and member questions.
 - Generating workout or diet plans when asked.
 - Asking for missing details when required.

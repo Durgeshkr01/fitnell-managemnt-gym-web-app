@@ -20,7 +20,13 @@ import {
   type MemberRecord,
 } from "@/lib/firebase/members";
 import { addPaymentRecord } from "@/lib/firebase/payments";
-import { addDaysToIso, parseDisplayToIso, toIsoDate } from "@/lib/date-utils";
+import {
+  addDaysToIso,
+  parseDisplayDate,
+  parseDisplayToIso,
+  toIsoDate,
+  toLocalDate,
+} from "@/lib/date-utils";
 import {
   autoCheckoutStale,
   checkInMember,
@@ -177,6 +183,45 @@ function AdminMembersContent() {
     });
   };
 
+  const parseMemberDate = (value?: string | null) => {
+    if (!value) return null;
+    if (value.includes("-")) {
+      return toLocalDate(value);
+    }
+    return parseDisplayDate(value);
+  };
+
+  const resolveExpiryDate = (member: MemberRecord) =>
+    parseMemberDate(member.planEndDate ?? member.expiry ?? null);
+
+  const resolveJoinDate = (member: MemberRecord) =>
+    parseMemberDate(member.joinDate ?? null);
+
+  const isExpiringSoon = (member: MemberRecord) => {
+    const expiry = resolveExpiryDate(member);
+    if (!expiry) {
+      return member.status === "Expiring Soon";
+    }
+    const diffMs = expiry.getTime() - Date.now();
+    return diffMs >= 0 && diffMs <= 7 * 24 * 60 * 60 * 1000;
+  };
+
+  const isExpired = (member: MemberRecord) => {
+    const expiry = resolveExpiryDate(member);
+    if (!expiry) {
+      return member.status === "Expired";
+    }
+    return expiry.getTime() < Date.now();
+  };
+
+  const isNewAdmission = (member: MemberRecord) => {
+    const joined = resolveJoinDate(member);
+    if (!joined) {
+      return Boolean(member.isNewAdmission);
+    }
+    return Date.now() - joined.getTime() <= 7 * 24 * 60 * 60 * 1000;
+  };
+
   const filteredMembers = useMemo(() => {
     const normalizedSearch = normalizeValue(searchText);
 
@@ -191,19 +236,19 @@ function AdminMembersContent() {
       }
 
       if (activeFilter === "Expiring in 7 Days") {
-        return member.status === "Expiring Soon";
+        return isExpiringSoon(member);
       }
       if (activeFilter === "Active") {
-        return member.status === "Active";
+        return !isExpired(member) && !isExpiringSoon(member);
       }
       if (activeFilter === "Expired") {
-        return member.status === "Expired";
+        return isExpired(member);
       }
       if (activeFilter === "Dues Pending") {
         return hasDuesValue(member.dues ?? "--");
       }
       if (activeFilter === "New Admissions") {
-        return Boolean(member.isNewAdmission);
+        return isNewAdmission(member);
       }
 
       return true;
@@ -472,6 +517,7 @@ function AdminMembersContent() {
     dues: string;
     paidOn: string;
     planDurationDays: number | null;
+    sendBill: boolean;
   }) => {
     if (!editingMember) return;
 
@@ -479,7 +525,8 @@ function AdminMembersContent() {
     setError(null);
 
     try {
-      await updateMemberPayment(editingMember.id, payload);
+      const { sendBill, ...updatePayload } = payload;
+      await updateMemberPayment(editingMember.id, updatePayload);
       await addPaymentRecord({
         memberId: editingMember.id,
         memberName: editingMember.name,
@@ -505,6 +552,29 @@ function AdminMembersContent() {
         )
       );
       setEditingMember(null);
+
+      if (sendBill) {
+        const phone = editingMember.phone?.trim();
+        if (phone) {
+          const normalized = phone.replace(/\D/g, "");
+          const waPhone = normalized.length === 10 ? `91${normalized}` : normalized;
+          if (waPhone) {
+            const message = [
+              "SG FITNESS EVOLUTION",
+              "Payment Receipt",
+              `Name: ${editingMember.name}`,
+              `Roll: ${editingMember.rollNumber ?? "--"}`,
+              `Plan: ${payload.planStartDate} - ${payload.planEndDate}`,
+              `Amount Paid: Rs ${payload.planAmount}`,
+              `Dues: Rs ${payload.dues}`,
+              `Paid On: ${payload.paidOn}`,
+              "Thank you!",
+            ].join("\n");
+            const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(message)}`;
+            window.location.href = waLink;
+          }
+        }
+      }
     } catch (saveError) {
       setError(
         saveError instanceof Error

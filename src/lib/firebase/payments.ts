@@ -7,6 +7,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  where,
   type DocumentData,
   type Firestore,
   type QueryDocumentSnapshot,
@@ -73,6 +74,22 @@ export async function getPayments() {
 
   const paymentsQuery = query(
     collection(firestore, "payments"),
+    orderBy("createdAt", "desc")
+  );
+  const snapshot = await getDocs(paymentsQuery);
+  return snapshot.docs.map(mapPayment);
+}
+
+export async function getPaymentsByMember(memberId: string) {
+  const trimmedId = memberId.trim();
+  if (!trimmedId) {
+    return [];
+  }
+
+  const firestore = await ensureReady();
+  const paymentsQuery = query(
+    collection(firestore, "payments"),
+    where("memberId", "==", trimmedId),
     orderBy("createdAt", "desc")
   );
   const snapshot = await getDocs(paymentsQuery);

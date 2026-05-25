@@ -26,6 +26,7 @@ export default function AdminAttendancePage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -74,6 +75,8 @@ export default function AdminAttendancePage() {
     return parsed.toISOString().slice(0, 10);
   };
 
+  const normalizeValue = (value: string) => value.toLowerCase().trim();
+
   const filteredHistory = useMemo(() => {
     const todayIso = new Date().toISOString().slice(0, 10);
     const startForDays = (days: number) => {
@@ -81,11 +84,21 @@ export default function AdminAttendancePage() {
       start.setDate(start.getDate() - (days - 1));
       return start.toISOString().slice(0, 10);
     };
+    const normalizedSearch = normalizeValue(searchText);
 
     return today.filter((record) => {
       const baseTime = record.checkInAt ?? record.checkOutAt;
       const iso = resolveIsoDate(baseTime);
       if (!iso) return false;
+
+      const matchesSearch = normalizedSearch
+        ? normalizeValue(record.memberName ?? "").includes(normalizedSearch) ||
+          normalizeValue(record.rollNumber ?? "").includes(normalizedSearch)
+        : true;
+
+      if (!matchesSearch) {
+        return false;
+      }
 
       if (dateFilter === "today") {
         return iso === todayIso;
@@ -110,7 +123,7 @@ export default function AdminAttendancePage() {
       }
       return true;
     });
-  }, [today, dateFilter, customFromDate, customToDate]);
+  }, [today, dateFilter, customFromDate, customToDate, searchText]);
 
   const sortedHistory = useMemo(() => {
     return [...filteredHistory].sort((a, b) => {
@@ -150,7 +163,7 @@ export default function AdminAttendancePage() {
   useEffect(() => {
     setSelectedIds(new Set());
     setDeleteMode(false);
-  }, [dateFilter, customFromDate, customToDate, today]);
+  }, [dateFilter, customFromDate, customToDate, today, searchText]);
 
   const toggleSelection = (recordId: string) => {
     if (!deleteMode) {
@@ -333,6 +346,18 @@ export default function AdminAttendancePage() {
                     </div>
                   ) : null}
                 </div>
+              </div>
+
+              <div className="mt-3">
+                <input
+                  className="input-base h-9 w-full rounded-full px-4 text-xs"
+                  placeholder="Search name or roll number"
+                  value={searchText}
+                  onChange={(event) => {
+                    setSearchText(event.target.value);
+                    setVisibleCount(PAGE_SIZE);
+                  }}
+                />
               </div>
 
               {sortedHistory.length > 0 ? (

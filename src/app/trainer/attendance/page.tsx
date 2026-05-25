@@ -252,7 +252,10 @@ export default function TrainerAttendancePage() {
                   </div>
                   <div className="text-right text-xs text-slate-400">
                     <p>{record.status === "in" ? "In Gym" : "Checked Out"}</p>
-                    <p>{formatDateTimeDisplay(record.checkInAt)}</p>
+                    <p>In: {formatDateTimeDisplay(record.checkInAt)}</p>
+                    {record.checkOutAt ? (
+                      <p>Out: {formatDateTimeDisplay(record.checkOutAt)}</p>
+                    ) : null}
                   </div>
                 </div>
               ))}

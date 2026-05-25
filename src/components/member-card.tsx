@@ -12,6 +12,7 @@ const statusStyles: Record<string, string> = {
 
 type MemberCardProps = {
   member: MemberRecord;
+  readOnly?: boolean;
   showPaymentAction?: boolean;
   onUpdatePayment?: (member: MemberRecord) => void;
   onClearDues?: (member: MemberRecord) => void;
@@ -30,6 +31,7 @@ const hasDuesValue = (dues: string) => {
 
 export default function MemberCard({
   member,
+  readOnly = false,
   showPaymentAction = false,
   onUpdatePayment,
   onClearDues,
@@ -176,83 +178,85 @@ export default function MemberCard({
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-        <ActionButton
-          actionName={`Member: Send Message ${member.id}`}
-          onClick={handleSendMessage}
-          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-slate-300"
-        >
-          ✉️ Send Msg
-        </ActionButton>
-        <ActionButton
-          actionName={`Member: WhatsApp Reminder ${member.id}`}
-          onClick={handleWhatsApp}
-          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-slate-300"
-        >
-          🟢 WhatsApp
-        </ActionButton>
-        {showDuesActions ? (
+      {!readOnly ? (
+        <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
           <ActionButton
-            actionName={`Member: Dues Reminder WhatsApp ${member.id}`}
-            onClick={handleDuesReminderWhatsApp}
-            className="rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-amber-200"
+            actionName={`Member: Send Message ${member.id}`}
+            onClick={handleSendMessage}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-slate-300"
           >
-            🟢 Dues WhatsApp
+            ✉️ Send Msg
           </ActionButton>
-        ) : null}
-        {showDuesActions && onClearDues ? (
-          <button
-            type="button"
-            onClick={() => onClearDues(member)}
-            className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-emerald-200"
-          >
-            ✅ Clear Dues
-          </button>
-        ) : null}
-        {showPayment ? (
           <ActionButton
-            actionName={`Member: Update Payment ${member.id}`}
-            onClick={(event) => {
-              if (onUpdatePayment) {
-                event.preventDefault();
-                onUpdatePayment(member);
-              }
-            }}
-            className="rounded-full border border-blue-400/40 bg-blue-500/10 px-3 py-2 text-blue-200"
+            actionName={`Member: WhatsApp Reminder ${member.id}`}
+            onClick={handleWhatsApp}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-slate-300"
           >
-            Update Payment
+            🟢 WhatsApp
           </ActionButton>
-        ) : null}
-        {onCheckIn && !isInGym ? (
-          <button
-            type="button"
-            onClick={() => onCheckIn(member)}
-            className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-emerald-200"
-          >
-            ✅ Check In
-          </button>
-        ) : null}
-        {onCheckOut && isInGym ? (
-          <button
-            type="button"
-            onClick={() => onCheckOut(member)}
-            className="rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-amber-200"
-          >
-            ⏱️ Check Out
-          </button>
-        ) : null}
-        {onDelete ? (
-          <button
-            type="button"
-            onClick={() => onDelete(member)}
-            disabled={deleting}
-            title="Delete"
-            className="rounded-full border border-rose-400/40 bg-rose-500/10 px-3 py-2 text-rose-200 hover:border-rose-400/60 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {deleting ? "..." : "🗑️"}
-          </button>
-        ) : null}
-      </div>
+          {showDuesActions ? (
+            <ActionButton
+              actionName={`Member: Dues Reminder WhatsApp ${member.id}`}
+              onClick={handleDuesReminderWhatsApp}
+              className="rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-amber-200"
+            >
+              🟢 Dues WhatsApp
+            </ActionButton>
+          ) : null}
+          {showDuesActions && onClearDues ? (
+            <button
+              type="button"
+              onClick={() => onClearDues(member)}
+              className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-emerald-200"
+            >
+              ✅ Clear Dues
+            </button>
+          ) : null}
+          {showPayment ? (
+            <ActionButton
+              actionName={`Member: Update Payment ${member.id}`}
+              onClick={(event) => {
+                if (onUpdatePayment) {
+                  event.preventDefault();
+                  onUpdatePayment(member);
+                }
+              }}
+              className="rounded-full border border-blue-400/40 bg-blue-500/10 px-3 py-2 text-blue-200"
+            >
+              Update Payment
+            </ActionButton>
+          ) : null}
+          {onCheckIn && !isInGym ? (
+            <button
+              type="button"
+              onClick={() => onCheckIn(member)}
+              className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-emerald-200"
+            >
+              ✅ Check In
+            </button>
+          ) : null}
+          {onCheckOut && isInGym ? (
+            <button
+              type="button"
+              onClick={() => onCheckOut(member)}
+              className="rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-amber-200"
+            >
+              ⏱️ Check Out
+            </button>
+          ) : null}
+          {onDelete ? (
+            <button
+              type="button"
+              onClick={() => onDelete(member)}
+              disabled={deleting}
+              title="Delete"
+              className="rounded-full border border-rose-400/40 bg-rose-500/10 px-3 py-2 text-rose-200 hover:border-rose-400/60 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {deleting ? "..." : "🗑️"}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

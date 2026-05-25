@@ -11,15 +11,27 @@ type ChatMessage = {
 };
 
 type AiChatbotProps = {
-  role: "admin" | "trainer";
+  role: "admin" | "trainer" | "member";
 };
 
+const buildWelcomeMessage = (role: AiChatbotProps["role"]): ChatMessage => {
+  const base =
+    "Hi! Main SG Fitness AI hoon. Aap plan/diet banwana chahte ho ya koi question hai? Details share kar do.";
 
-const WELCOME_MESSAGE: ChatMessage = {
-  id: "welcome",
-  role: "assistant",
-  content:
-    "Hi! Main SG Fitness AI hoon. Aap plan/diet banwana chahte ho ya koi question hai? Details share kar do.",
+  if (role === "member") {
+    return {
+      id: "welcome",
+      role: "assistant",
+      content:
+        "Hi! Main SG Fitness AI hoon. Aap apne plan, diet, ya routine ke baare me puch sakte ho. Kya help chahiye?",
+    };
+  }
+
+  return {
+    id: "welcome",
+    role: "assistant",
+    content: base,
+  };
 };
 
 
@@ -27,13 +39,14 @@ export default function AiChatbot({ role }: AiChatbotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE]);
+  const [messages, setMessages] = useState<ChatMessage[]>([buildWelcomeMessage(role)]);
   const listRef = useRef<HTMLDivElement | null>(null);
 
-  const title = useMemo(
-    () => (role === "admin" ? "Admin AI Coach" : "Trainer AI Coach"),
-    [role]
-  );
+  const title = useMemo(() => {
+    if (role === "admin") return "Admin AI Coach";
+    if (role === "trainer") return "Trainer AI Coach";
+    return "Member AI Coach";
+  }, [role]);
 
   useEffect(() => {
     if (!listRef.current) return;
@@ -67,7 +80,18 @@ export default function AiChatbot({ role }: AiChatbotProps) {
       });
 
       if (!response.ok) {
-        throw new Error("AI request failed");
+        let errorMessage = "AI request failed.";
+        try {
+          const errorPayload = (await response.json()) as {
+            error?: string;
+            detail?: string;
+          };
+          errorMessage =
+            errorPayload.detail || errorPayload.error || errorMessage;
+        } catch {
+          // Keep default message for non-JSON errors.
+        }
+        throw new Error(errorMessage);
       }
 
       const data = (await response.json()) as { reply?: string };
@@ -81,13 +105,17 @@ export default function AiChatbot({ role }: AiChatbotProps) {
           content: reply || "Sorry, reply generate nahi hua. Dobara try karein.",
         },
       ]);
-    } catch {
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Network issue lag raha hai. Thoda baad try karein.";
       setMessages((prev) => [
         ...prev,
         {
           id: `assistant-${Date.now()}`,
           role: "assistant",
-          content: "Network issue lag raha hai. Thoda baad try karein.",
+          content: message,
         },
       ]);
     } finally {

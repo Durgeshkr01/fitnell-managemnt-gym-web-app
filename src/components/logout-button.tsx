@@ -21,6 +21,9 @@ export default function LogoutButton() {
       window.localStorage.removeItem("adminAuthed");
       window.localStorage.removeItem("trainerName");
       window.localStorage.removeItem("trainerCode");
+      window.localStorage.removeItem("memberId");
+      window.localStorage.removeItem("memberPhone");
+      window.localStorage.removeItem("memberName");
     }
 
     router.push("/");

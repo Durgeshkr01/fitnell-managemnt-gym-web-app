@@ -64,6 +64,8 @@ const ensureReady = async (): Promise<Firestore> => {
   return db;
 };
 
+const normalizePhone = (value: string) => value.replace(/\D/g, "");
+
 function parseDate(value?: string | null) {
   if (!value) {
     return null;
@@ -285,6 +287,30 @@ export async function getMemberById(memberId: string) {
   }
 
   return mapMemberData(snapshot.id, snapshot.data());
+}
+
+export async function getMemberByPhone(phone: string) {
+  const trimmed = phone.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const firestore = await ensureReady();
+  const normalizedTarget = normalizePhone(trimmed);
+  if (!normalizedTarget) {
+    return null;
+  }
+
+  const snapshot = await getDocs(collection(firestore, "members"));
+  for (const docSnap of snapshot.docs) {
+    const data = docSnap.data();
+    const storedPhone = typeof data.phone === "string" ? data.phone : "";
+    if (normalizePhone(storedPhone) === normalizedTarget) {
+      return mapMemberData(docSnap.id, data);
+    }
+  }
+
+  return null;
 }
 
 export async function deleteMember(memberId: string) {
