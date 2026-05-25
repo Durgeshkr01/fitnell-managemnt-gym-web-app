@@ -1,6 +1,11 @@
 const pad = (value: number) => String(value).padStart(2, "0");
 
-export const toIsoDate = (date: Date) => date.toISOString().slice(0, 10);
+export const toIsoDate = (date: Date) => {
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  return `${year}-${month}-${day}`;
+};
 
 export const toLocalDate = (isoDate: string) => {
   const parsed = new Date(`${isoDate}T00:00:00`);

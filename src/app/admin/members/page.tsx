@@ -22,11 +22,15 @@ import {
 import { addPaymentRecord } from "@/lib/firebase/payments";
 import {
   addDaysToIso,
+  formatDateDisplay,
+  formatDateTimeDisplay,
   parseDisplayDate,
   parseDisplayToIso,
   toIsoDate,
   toLocalDate,
 } from "@/lib/date-utils";
+import { fillTemplate, resolveTemplate } from "@/lib/messages";
+import { useMessageTemplates } from "@/lib/use-message-templates";
 import {
   autoCheckoutStale,
   checkInMember,
@@ -63,6 +67,7 @@ function AdminMembersContent() {
   const [searchText, setSearchText] = useState("");
   const [activeFilter, setActiveFilter] = useState(filters[0]);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const { templates } = useMessageTemplates();
 
   useEffect(() => {
     const filterParam = searchParams.get("filter");
@@ -134,6 +139,14 @@ function AdminMembersContent() {
   }, [loading, members.length]);
 
   const normalizeValue = (value: string) => value.toLowerCase().trim();
+
+  const normalizePhone = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length === 10) {
+      return `91${digits}`;
+    }
+    return digits;
+  };
 
   const hasDuesValue = (dues: string) => {
     const normalized = String(dues).replace(/\s/g, "").toLowerCase();
@@ -559,17 +572,15 @@ function AdminMembersContent() {
           const normalized = phone.replace(/\D/g, "");
           const waPhone = normalized.length === 10 ? `91${normalized}` : normalized;
           if (waPhone) {
-            const message = [
-              "SG FITNESS EVOLUTION",
-              "Payment Receipt",
-              `Name: ${editingMember.name}`,
-              `Roll: ${editingMember.rollNumber ?? "--"}`,
-              `Plan: ${payload.planStartDate} - ${payload.planEndDate}`,
-              `Amount Paid: Rs ${payload.planAmount}`,
-              `Dues: Rs ${payload.dues}`,
-              `Paid On: ${payload.paidOn}`,
-              "Thank you!",
-            ].join("\n");
+            const message = fillTemplate(resolveTemplate(templates, "paymentReceipt"), {
+              name: editingMember.name,
+              roll: editingMember.rollNumber ?? "--",
+              planStart: formatDateDisplay(payload.planStartDate),
+              planEnd: formatDateDisplay(payload.planEndDate),
+              amount: payload.planAmount,
+              dues: payload.dues,
+              paidOn: formatDateTimeDisplay(payload.paidOn),
+            });
             const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(message)}`;
             window.location.href = waLink;
           }
@@ -586,7 +597,11 @@ function AdminMembersContent() {
     }
   };
 
-  const handleSaveDues = async (payload: { amount: number; paidOn: string }) => {
+  const handleSaveDues = async (payload: {
+    amount: number;
+    paidOn: string;
+    sendMessage: boolean;
+  }) => {
     if (!duesMember) return;
 
     setSavingDues(true);
@@ -612,6 +627,19 @@ function AdminMembersContent() {
             : item
         )
       );
+      if (payload.sendMessage) {
+        const waPhone = normalizePhone(duesMember.phone ?? "");
+        if (waPhone) {
+          const message = fillTemplate(resolveTemplate(templates, "duesClear"), {
+            name: duesMember.name,
+            roll: duesMember.rollNumber ?? "--",
+            amount: payload.amount,
+            paidOn: formatDateTimeDisplay(payload.paidOn),
+          });
+          const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(message)}`;
+          window.location.href = waLink;
+        }
+      }
       setDuesMember(null);
     } catch (saveError) {
       setError(

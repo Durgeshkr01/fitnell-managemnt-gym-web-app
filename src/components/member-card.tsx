@@ -3,6 +3,8 @@
 import ActionButton from "@/components/action-button";
 import { formatDateDisplay } from "@/lib/date-utils";
 import type { MemberRecord } from "@/lib/firebase/members";
+import { fillTemplate, resolveTemplate } from "@/lib/messages";
+import { useMessageTemplates } from "@/lib/use-message-templates";
 
 const statusStyles: Record<string, string> = {
   Active: "border-emerald-400/30 text-emerald-300",
@@ -44,25 +46,39 @@ export default function MemberCard({
 }: MemberCardProps) {
   const showPayment = showPaymentAction;
   const showDuesActions = hasDuesValue(member.dues);
+  const { templates } = useMessageTemplates();
 
   const buildStatusMessage = () => {
     const name = member.name ?? "Member";
+    const expiryLabel = member.expiry ?? "--";
 
     if (member.status === "Expiring Soon") {
-      return `Hi ${name}! Aapka gym plan jaldi expire ho raha hai. Renewal ke liye hum yahin hain. Aapki fitness journey ko strong banaye rakhein! 💪`;
+      return fillTemplate(resolveTemplate(templates, "planExpiring"), {
+        name,
+        expiry: expiryLabel,
+        detail: "",
+      });
     }
 
     if (member.status === "Expired") {
-      return `Hi ${name}! Aapka gym plan expire ho chuka hai. Wapas start karne ke liye ek quick renewal kar lein. Hum aapko phir se track par lana chahte hain! 🌟`;
+      return fillTemplate(resolveTemplate(templates, "planExpired"), {
+        name,
+        expiry: expiryLabel,
+        detail: "",
+      });
     }
 
-    return `Hi ${name}! Aapki fitness journey awesome chal rahi hai. Aaj bhi energy high rakhein aur consistency banaye rakhein! 🔥`;
+    return fillTemplate(resolveTemplate(templates, "statusActive"), { name });
   };
 
   const buildDuesMessage = () => {
     const name = member.name ?? "Member";
     const duesLabel = member.dues ?? "";
-    return `Hi ${name}! Aapke account me dues pending hai${duesLabel ? ` (₹${duesLabel})` : ""}. Jab convenient ho, payment update kar dein. Hum aapki fitness journey ko smooth banana chahte hain! 💪`;
+    return fillTemplate(resolveTemplate(templates, "duesReminder"), {
+      name,
+      dues: duesLabel,
+      detail: "",
+    });
   };
 
   const handleSendMessage = () => {

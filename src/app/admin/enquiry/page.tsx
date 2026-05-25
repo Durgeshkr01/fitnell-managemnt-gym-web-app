@@ -10,6 +10,8 @@ import {
   markEnquiryJoined,
   type EnquiryRecord,
 } from "@/lib/firebase/enquiries";
+import { fillTemplate, resolveTemplate } from "@/lib/messages";
+import { useMessageTemplates } from "@/lib/use-message-templates";
 
 const buildInitialForm = () => ({
   name: "",
@@ -28,6 +30,7 @@ export default function AdminEnquiryPage() {
   const [selectedEnquiry, setSelectedEnquiry] = useState<EnquiryRecord | null>(
     null
   );
+  const { templates } = useMessageTemplates();
 
   const refreshEnquiries = async () => {
     try {
@@ -64,7 +67,10 @@ export default function AdminEnquiryPage() {
 
     const baseUrl = window.location.origin;
     const cardUrl = `${baseUrl}/enquiry-card.png`;
-    const message = `SG FITNESS EVOLUTION\nStronger Today · Better Tomorrow\n\nENQUIRY CARD\nPhone: 8809551534\nLocation: Near Station Supaul\n\nThis card is valid for:\n- Free Gym Tour\n- Trainer Consultation\n- Body Assessment\n- Special Joining Offers\n\n*This card is only for enquiry purpose and does not confirm membership.*`;
+    const message = fillTemplate(resolveTemplate(templates, "enquiryCard"), {
+      phone: "8809551534",
+      location: "Near Station Supaul",
+    });
     const waLink = `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
     window.location.href = waLink;
   };

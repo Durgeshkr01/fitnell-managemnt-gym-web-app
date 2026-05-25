@@ -13,6 +13,7 @@ const parseNumber = (value: string) => {
 type ClearDuesPayload = {
   amount: number;
   paidOn: string;
+  sendMessage: boolean;
 };
 
 type ClearDuesModalProps = {
@@ -33,6 +34,7 @@ export default function ClearDuesModal({
     amount:
       member.dues && member.dues !== "--" ? String(member.dues) : "0",
     paidOn: initialPaidOn,
+    sendMessage: true,
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -56,6 +58,7 @@ export default function ClearDuesModal({
     onSave({
       amount,
       paidOn: form.paidOn || initialPaidOn,
+      sendMessage: form.sendMessage,
     });
   };
 
@@ -106,6 +109,18 @@ export default function ClearDuesModal({
               required
             />
           </div>
+
+          <label className="flex items-center gap-2 text-xs text-slate-300">
+            <input
+              type="checkbox"
+              checked={form.sendMessage}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, sendMessage: event.target.checked }))
+              }
+              className="h-4 w-4 rounded border-white/20 bg-white/10 text-emerald-400"
+            />
+            Send dues clear WhatsApp message
+          </label>
 
           {error ? (
             <div className="rounded-xl border border-rose-400/40 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">

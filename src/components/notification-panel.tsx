@@ -13,6 +13,8 @@ import {
 } from "@/lib/firebase/notifications";
 import { getMemberById } from "@/lib/firebase/members";
 import { formatDateTimeDisplay } from "@/lib/date-utils";
+import { fillTemplate, resolveTemplate } from "@/lib/messages";
+import { useMessageTemplates } from "@/lib/use-message-templates";
 
 const tabs = [
   "All",
@@ -47,6 +49,7 @@ export default function NotificationPanel({
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("All");
   const [searchText, setSearchText] = useState("");
+  const { templates } = useMessageTemplates();
 
   const notificationsHref =
     role === "admin" ? "/admin/notifications" : "/trainer/notifications";
@@ -118,19 +121,27 @@ export default function NotificationPanel({
   ) => {
     const detail = alert.detail ? ` ${alert.detail}` : "";
 
+    const payload = {
+      name: memberName,
+      title: alert.title,
+      detail: detail.trim(),
+      expiry: detail.trim(),
+      dues: detail.trim(),
+    };
+
     switch (alert.category) {
       case "Dues":
-        return `Namaste ${memberName}, aapka dues pending hai.${detail} Kripya payment complete karein.`;
+        return fillTemplate(resolveTemplate(templates, "duesReminder"), payload);
       case "Expiring":
-        return `Namaste ${memberName}, aapka plan jaldi expire ho raha hai.${detail} Renewal ke liye gym se sampark karein.`;
+        return fillTemplate(resolveTemplate(templates, "planExpiring"), payload);
       case "Expired":
-        return `Namaste ${memberName}, aapka plan expire ho chuka hai.${detail} Renewal ke liye gym se sampark karein.`;
+        return fillTemplate(resolveTemplate(templates, "planExpired"), payload);
       case "Birthday":
-        return `Happy birthday ${memberName}! SG Fitness ki taraf se shubhkamnayein.`;
+        return fillTemplate(resolveTemplate(templates, "birthdayWish"), payload);
       case "Payments":
-        return `Namaste ${memberName}, payment update: ${alert.title}.${detail}`;
+        return fillTemplate(resolveTemplate(templates, "paymentUpdate"), payload);
       default:
-        return `Namaste ${memberName}, ${alert.title}.${detail}`;
+        return fillTemplate(resolveTemplate(templates, "notificationGeneral"), payload);
     }
   };
 

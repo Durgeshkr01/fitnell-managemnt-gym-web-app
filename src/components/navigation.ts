@@ -12,6 +12,7 @@ export const adminNav: NavItem[] = [
   { label: "Payment History", href: "/admin/payments", icon: "💳" },
   { label: "Enquiry 📩", href: "/admin/enquiry", icon: "📩" },
   { label: "Broadcast & Cards", href: "/admin/broadcast-cards", icon: "📣" },
+  { label: "Message Templates", href: "/admin/message-settings", icon: "✍️" },
 ];
 
 export const trainerNav: NavItem[] = [
