@@ -1,8 +1,35 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SiteFooter from "@/components/site-footer";
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const storedRole = window.localStorage.getItem("authRole");
+    const hasAdmin = window.localStorage.getItem("adminAuthed") === "true";
+    const trainerCodeValue = window.localStorage.getItem("trainerCode");
+    const memberId = window.localStorage.getItem("memberId");
+
+    if (storedRole === "admin" && hasAdmin) {
+      router.replace("/admin");
+      return;
+    }
+
+    if (storedRole === "trainer" && trainerCodeValue) {
+      router.replace("/trainer");
+      return;
+    }
+
+    if (storedRole === "member" && memberId) {
+      router.replace("/member");
+    }
+  }, [router]);
+
   return (
     <div className="app-bg min-h-screen relative overflow-hidden">
       <div className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-[color:var(--accent)] opacity-20 blur-3xl" />
