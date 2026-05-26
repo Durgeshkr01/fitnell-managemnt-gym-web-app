@@ -36,7 +36,7 @@ export const messageTemplateLabels: Record<MessageTemplateKey, string> = {
   duesReminder: "Dues Reminder",
   birthdayWish: "Birthday Wish",
   statusActive: "Active Status Message",
-  paymentUpdate: "Payment Update (Notifications)",
+  paymentUpdate: "Payment Update",
   notificationGeneral: "General Notification",
   enquiryCard: "Enquiry Card",
 };

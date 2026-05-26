@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AddMemberModal from "@/components/add-member-modal";
 import Link from "next/link";
 import SectionHeader from "@/components/section-header";
 import StatCard from "@/components/stat-card";
 import { getPayments, type PaymentRecord } from "@/lib/firebase/payments";
 import { getMembers, type MemberRecord } from "@/lib/firebase/members";
-import { syncMemberNotifications } from "@/lib/firebase/notifications";
 
 const statLabels = [
   "Total Members",
@@ -36,7 +35,6 @@ export default function AdminDashboard() {
   const [paymentsLoading, setPaymentsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [paymentsError, setPaymentsError] = useState<string | null>(null);
-  const didSyncNotifications = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -86,13 +84,6 @@ export default function AdminDashboard() {
       active = false;
     };
   }, []);
-
-  useEffect(() => {
-    if (!loading && members.length > 0 && !didSyncNotifications.current) {
-      didSyncNotifications.current = true;
-      void syncMemberNotifications(members);
-    }
-  }, [loading, members]);
 
   const totalMembers = members.length;
   const activeMembers = useMemo(

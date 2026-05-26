@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import SectionHeader from "@/components/section-header";
 import StatCard from "@/components/stat-card";
 import { getMembers, type MemberRecord } from "@/lib/firebase/members";
 import { autoCheckoutStale, getTodayAttendance } from "@/lib/firebase/attendance";
-import { syncMemberNotifications } from "@/lib/firebase/notifications";
 
 const statLabels = [
   "Active Members",
@@ -29,7 +28,6 @@ export default function TrainerDashboard() {
   const [attendanceToday, setAttendanceToday] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [trainerName, setTrainerName] = useState<string>("");
-  const didSyncNotifications = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -78,13 +76,6 @@ export default function TrainerDashboard() {
     const storedName = window.localStorage.getItem("trainerName") ?? "";
     setTrainerName(storedName.trim());
   }, []);
-
-  useEffect(() => {
-    if (!loading && members.length > 0 && !didSyncNotifications.current) {
-      didSyncNotifications.current = true;
-      void syncMemberNotifications(members);
-    }
-  }, [loading, members]);
 
   const activeMembers = useMemo(
     () => members.filter((member) => member.status === "Active").length,

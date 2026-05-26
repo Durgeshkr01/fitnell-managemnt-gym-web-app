@@ -34,6 +34,7 @@ const buildInitialFormState = () => {
     planEndDate: toIsoDate(nextMonth),
     planAmount: "500",
     planDurationDays: "30",
+    dues: "0",
   };
 };
 
@@ -91,7 +92,7 @@ export default function AddMemberModal({
       planStart: formatDateDisplay(form.planStartDate),
       planEnd: formatDateDisplay(form.planEndDate),
       amount: form.planAmount,
-      dues: "0",
+      dues: form.dues ?? "0",
     });
 
     const waLink = `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
@@ -107,6 +108,7 @@ export default function AddMemberModal({
     const trimmedGender = form.gender.trim();
     const trimmedPhone = form.phone.trim();
     const planAmountNumber = Number(form.planAmount);
+    const duesNumber = Number(form.dues ?? "0");
     const planDaysNumber = form.planDurationDays ? Number(form.planDurationDays) : null;
 
     if (!trimmedName || !trimmedRollNumber || !trimmedGender || !trimmedPhone) {
@@ -127,6 +129,11 @@ export default function AddMemberModal({
 
     if (Number.isNaN(planAmountNumber) || planAmountNumber <= 0) {
       setError("Plan amount must be a valid number.");
+      return;
+    }
+
+    if (Number.isNaN(duesNumber) || duesNumber < 0) {
+      setError("Dues must be a valid number.");
       return;
     }
 
@@ -158,6 +165,7 @@ export default function AddMemberModal({
         planName: null,
         planAmount: planAmountNumber,
         planDurationDays: planDaysNumber,
+        dues: String(duesNumber),
       });
       runAction("Members: Add", {
         name: trimmedName,
@@ -402,21 +410,38 @@ export default function AddMemberModal({
                   End date updates based on days from the start date.
                 </p>
               </div>
-              <div>
-                <label className="text-xs uppercase tracking-[0.3em] text-slate-400">
-                  Plan Amount
-                </label>
-                <input
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
-                  value={form.planAmount ?? ""}
-                  onChange={(event) =>
-                    setForm((prev) => ({ ...prev, planAmount: event.target.value }))
-                  }
-                  placeholder="500"
-                  type="number"
-                  min={1}
-                  required
-                />
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                    Plan Amount
+                  </label>
+                  <input
+                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                    value={form.planAmount ?? ""}
+                    onChange={(event) =>
+                      setForm((prev) => ({ ...prev, planAmount: event.target.value }))
+                    }
+                    placeholder="500"
+                    type="number"
+                    min={1}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                    Dues
+                  </label>
+                  <input
+                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                    value={form.dues ?? "0"}
+                    onChange={(event) =>
+                      setForm((prev) => ({ ...prev, dues: event.target.value }))
+                    }
+                    placeholder="0"
+                    type="number"
+                    min={0}
+                  />
+                </div>
               </div>
 
               {error ? (

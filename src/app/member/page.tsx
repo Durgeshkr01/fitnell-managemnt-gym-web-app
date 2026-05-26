@@ -8,6 +8,7 @@ import MemberCard from "@/components/member-card";
 import SectionHeader from "@/components/section-header";
 import SiteFooter from "@/components/site-footer";
 import { formatDateTimeDisplay } from "@/lib/date-utils";
+import { getAttendanceByMember, type AttendanceRecord } from "@/lib/firebase/attendance";
 import {
   getMemberById,
   getMembersByPhone,
@@ -15,10 +16,14 @@ import {
 } from "@/lib/firebase/members";
 import { getPaymentsByMember, type PaymentRecord } from "@/lib/firebase/payments";
 
+type AttendanceFilter = "week" | "month" | "all";
+
 export default function MemberPortalPage() {
   const [member, setMember] = useState<MemberRecord | null>(null);
   const [members, setMembers] = useState<MemberRecord[]>([]);
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+  const [attendanceFilter, setAttendanceFilter] = useState<AttendanceFilter>("week");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,9 +39,10 @@ export default function MemberPortalPage() {
         }
 
         if (memberId) {
-          const [memberData, paymentData] = await Promise.all([
+          const [memberData, paymentData, attendanceData] = await Promise.all([
             getMemberById(memberId),
             getPaymentsByMember(memberId),
+            getAttendanceByMember(memberId),
           ]);
 
           if (!memberData) {
@@ -47,6 +53,7 @@ export default function MemberPortalPage() {
             setMember(memberData);
             setMembers([memberData]);
             setPayments(paymentData);
+            setAttendance(attendanceData);
           }
           return;
         }
@@ -56,15 +63,18 @@ export default function MemberPortalPage() {
           throw new Error("Member profile not found.");
         }
 
-        const paymentsList = await Promise.all(
-          matchedMembers.map((record) => getPaymentsByMember(record.id))
-        );
+        const [paymentsList, attendanceList] = await Promise.all([
+          Promise.all(matchedMembers.map((record) => getPaymentsByMember(record.id))),
+          Promise.all(matchedMembers.map((record) => getAttendanceByMember(record.id))),
+        ]);
         const mergedPayments = paymentsList.flat();
+        const mergedAttendance = attendanceList.flat();
 
         if (isActive) {
           setMembers(matchedMembers);
           setMember(matchedMembers[0] ?? null);
           setPayments(mergedPayments);
+          setAttendance(mergedAttendance);
         }
       } catch (loadError) {
         if (isActive) {
@@ -96,6 +106,53 @@ export default function MemberPortalPage() {
       return bTime - aTime;
     });
   }, [payments]);
+
+  const attendanceRangeStart = useMemo(() => {
+    if (attendanceFilter === "all") {
+      return null;
+    }
+    const days = attendanceFilter === "month" ? 30 : 7;
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - (days - 1));
+    return start.getTime();
+  }, [attendanceFilter]);
+
+  const filteredAttendance = useMemo(() => {
+    if (!attendanceRangeStart) {
+      return attendance;
+    }
+    return attendance.filter((record) => {
+      if (!record.checkInAt) return false;
+      const checkInTime = new Date(record.checkInAt).getTime();
+      return checkInTime >= attendanceRangeStart;
+    });
+  }, [attendance, attendanceRangeStart]);
+
+  const attendanceByMember = useMemo(() => {
+    const map: Record<string, AttendanceRecord[]> = {};
+    filteredAttendance.forEach((record) => {
+      if (!record.memberId) return;
+      if (!map[record.memberId]) {
+        map[record.memberId] = [];
+      }
+      map[record.memberId].push(record);
+    });
+    return map;
+  }, [filteredAttendance]);
+
+  const getAttendanceDaysCount = (records: AttendanceRecord[]) => {
+    const daySet = new Set<string>();
+    records.forEach((record) => {
+      if (!record.checkInAt) return;
+      const date = new Date(record.checkInAt);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+        date.getDate()
+      ).padStart(2, "0")}`;
+      daySet.add(key);
+    });
+    return daySet.size;
+  };
 
   return (
     <AuthGuard role="member">
@@ -171,6 +228,114 @@ export default function MemberPortalPage() {
                       </p>
                       <p className="text-xs text-slate-400">
                         Roll {payment.rollNumber ?? "--"}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <SectionHeader
+            title="Attendance History"
+            subtitle="Your check-ins for this week, month, or all time."
+          />
+
+          <div className="glass-panel rounded-2xl p-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                {[
+                  { label: "This Week", value: "week" },
+                  { label: "This Month", value: "month" },
+                  { label: "All", value: "all" },
+                ].map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => setAttendanceFilter(item.value as AttendanceFilter)}
+                    className={`rounded-full border px-3 py-1 text-xs transition ${
+                      attendanceFilter === item.value
+                        ? "border-white/30 bg-white/10 text-white"
+                        : "border-white/10 bg-white/5 text-slate-300"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              <div className="text-xs text-slate-400">
+                Days in gym: {getAttendanceDaysCount(filteredAttendance)}
+              </div>
+            </div>
+
+            {loading ? (
+              <p className="mt-4 text-sm text-slate-300">Loading attendance...</p>
+            ) : filteredAttendance.length === 0 ? (
+              <p className="mt-4 text-sm text-slate-300">No attendance records yet.</p>
+            ) : members.length > 1 ? (
+              <div className="mt-4 space-y-4">
+                {members.map((entry) => {
+                  const records = attendanceByMember[entry.id] ?? [];
+                  if (records.length === 0) {
+                    return null;
+                  }
+                  return (
+                    <div
+                      key={entry.id}
+                      className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="text-sm text-white">{entry.name}</p>
+                        <p className="text-xs text-slate-400">
+                          Days in gym: {getAttendanceDaysCount(records)}
+                        </p>
+                      </div>
+                      <div className="mt-3 space-y-2">
+                        {records.map((record) => (
+                          <div
+                            key={record.id}
+                            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs"
+                          >
+                            <div>
+                              <p className="text-slate-200">Check-in</p>
+                              <p className="text-slate-400">
+                                {formatDateTimeDisplay(record.checkInAt)}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-slate-200">Check-out</p>
+                              <p className="text-slate-400">
+                                {record.checkOutAt
+                                  ? formatDateTimeDisplay(record.checkOutAt)
+                                  : "--"}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="mt-4 space-y-2">
+                {filteredAttendance.map((record) => (
+                  <div
+                    key={record.id}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs"
+                  >
+                    <div>
+                      <p className="text-slate-200">Check-in</p>
+                      <p className="text-slate-400">
+                        {formatDateTimeDisplay(record.checkInAt)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-slate-200">Check-out</p>
+                      <p className="text-slate-400">
+                        {record.checkOutAt
+                          ? formatDateTimeDisplay(record.checkOutAt)
+                          : "--"}
                       </p>
                     </div>
                   </div>

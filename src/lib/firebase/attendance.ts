@@ -90,6 +90,22 @@ export async function getTodayAttendance() {
   return snapshot.docs.map(mapAttendance);
 }
 
+export async function getAttendanceByMember(memberId: string) {
+  const trimmedId = memberId.trim();
+  if (!trimmedId) {
+    return [];
+  }
+
+  const firestore = await ensureReady();
+  const attendanceQuery = query(
+    collection(firestore, "attendance"),
+    where("memberId", "==", trimmedId),
+    orderBy("checkInAt", "desc")
+  );
+  const snapshot = await getDocs(attendanceQuery);
+  return snapshot.docs.map(mapAttendance);
+}
+
 export async function checkInMember(params: {
   memberId: string;
   memberName: string;
