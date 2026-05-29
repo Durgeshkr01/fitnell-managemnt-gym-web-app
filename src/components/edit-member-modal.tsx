@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import DatePicker from "@/components/date-picker";
-import { addDaysToIso, diffDays } from "@/lib/date-utils";
+import { addPlanDaysToIso, diffDaysInclusive } from "@/lib/date-utils";
 import type { MemberRecord } from "@/lib/firebase/members";
 
 const toNumber = (value: string) => {
@@ -230,7 +230,7 @@ export default function EditMemberModal({
                     ...prev,
                     planStartDate: value,
                     planEndDate: prev.planDurationDays
-                      ? addDaysToIso(value, Number(prev.planDurationDays))
+                      ? addPlanDaysToIso(value, Number(prev.planDurationDays))
                       : prev.planEndDate,
                   }))
                 }
@@ -245,7 +245,7 @@ export default function EditMemberModal({
                 className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
                 value={form.planEndDate}
                 onChange={(value) => {
-                  const duration = diffDays(form.planStartDate, value);
+                  const duration = diffDaysInclusive(form.planStartDate, value);
                   setForm((prev) => ({
                     ...prev,
                     planEndDate: value,
@@ -272,7 +272,7 @@ export default function EditMemberModal({
                     planDurationDays: nextValue,
                     planEndDate:
                       nextValue && !Number.isNaN(Number(nextValue))
-                        ? addDaysToIso(prev.planStartDate, Number(nextValue))
+                        ? addPlanDaysToIso(prev.planStartDate, Number(nextValue))
                         : prev.planEndDate,
                   }));
                 }}

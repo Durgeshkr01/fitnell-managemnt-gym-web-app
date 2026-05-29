@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import DatePicker from "@/components/date-picker";
 import {
-  addDaysToIso,
+  addPlanDaysToIso,
+  diffDaysInclusive,
   formatDateDisplay,
   formatDateTimeDisplay,
   toIsoDate,
@@ -49,7 +50,7 @@ export default function UpdatePaymentModal({
       ? String(member.planDurationDays)
       : "30";
   const initialEndDate = useMemo(
-    () => addDaysToIso(initialStartDate, Number(initialDurationDays)),
+    () => addPlanDaysToIso(initialStartDate, Number(initialDurationDays)),
     [initialStartDate, initialDurationDays]
   );
   const [form, setForm] = useState({
@@ -131,10 +132,10 @@ export default function UpdatePaymentModal({
                   setForm((prev) => ({
                     ...prev,
                     planStartDate: value,
-                    planEndDate: addDaysToIso(
-                      value,
-                      Number(prev.planDurationDays || 0)
-                    ),
+                    planEndDate:
+                      prev.planDurationDays && Number(prev.planDurationDays) > 0
+                        ? addPlanDaysToIso(value, Number(prev.planDurationDays))
+                        : prev.planEndDate,
                   }))
                 }
                 required
@@ -151,10 +152,13 @@ export default function UpdatePaymentModal({
                   setForm((prev) => ({
                     ...prev,
                     planDurationDays: event.target.value,
-                    planEndDate: addDaysToIso(
-                      prev.planStartDate,
-                      Number(event.target.value || 0)
-                    ),
+                    planEndDate:
+                      event.target.value && Number(event.target.value) > 0
+                        ? addPlanDaysToIso(
+                            prev.planStartDate,
+                            Number(event.target.value)
+                          )
+                        : prev.planEndDate,
                   }))
                 }
                 placeholder="Days"
@@ -172,8 +176,15 @@ export default function UpdatePaymentModal({
             <DatePicker
               className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
               value={form.planEndDate}
-              onChange={() => undefined}
-              readOnly
+              onChange={(value) => {
+                const duration = diffDaysInclusive(form.planStartDate, value);
+                setForm((prev) => ({
+                  ...prev,
+                  planEndDate: value,
+                  planDurationDays:
+                    duration !== null ? String(duration) : prev.planDurationDays,
+                }));
+              }}
             />
           </div>
 

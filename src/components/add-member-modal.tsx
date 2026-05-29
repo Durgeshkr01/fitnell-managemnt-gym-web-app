@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import DatePicker from "@/components/date-picker";
-import { addDaysToIso, diffDays, formatDateDisplay, toIsoDate } from "@/lib/date-utils";
+import {
+  addPlanDaysToIso,
+  diffDaysInclusive,
+  formatDateDisplay,
+  toIsoDate,
+} from "@/lib/date-utils";
 import { addMember, getMemberByRollNumber } from "@/lib/firebase/members";
 import { addPaymentRecord } from "@/lib/firebase/payments";
 import { useAction } from "./action-provider";
@@ -357,7 +362,7 @@ export default function AddMemberModal({
                         ...prev,
                         planStartDate: value,
                         planEndDate: prev.planDurationDays
-                          ? addDaysToIso(value, Number(prev.planDurationDays))
+                          ? addPlanDaysToIso(value, Number(prev.planDurationDays))
                           : prev.planEndDate,
                       }))
                     }
@@ -372,7 +377,7 @@ export default function AddMemberModal({
                     className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
                     value={form.planEndDate ?? ""}
                     onChange={(value) => {
-                      const duration = diffDays(form.planStartDate, value);
+                      const duration = diffDaysInclusive(form.planStartDate, value);
                       setForm((prev) => ({
                         ...prev,
                         planEndDate: value,
@@ -398,7 +403,7 @@ export default function AddMemberModal({
                       planDurationDays: nextValue,
                       planEndDate:
                         nextValue && !Number.isNaN(Number(nextValue))
-                          ? addDaysToIso(prev.planStartDate, Number(nextValue))
+                          ? addPlanDaysToIso(prev.planStartDate, Number(nextValue))
                           : prev.planEndDate,
                     }));
                   }}

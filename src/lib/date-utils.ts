@@ -75,6 +75,13 @@ export const addDaysToIso = (isoDate: string, days: number) => {
   return toIsoDate(next);
 };
 
+export const addPlanDaysToIso = (isoDate: string, days: number) => {
+  if (!days || days <= 0) {
+    return isoDate;
+  }
+  return addDaysToIso(isoDate, Math.max(days - 1, 0));
+};
+
 export const diffDays = (startIso: string, endIso: string) => {
   const start = toLocalDate(startIso);
   const end = toLocalDate(endIso);
@@ -84,4 +91,18 @@ export const diffDays = (startIso: string, endIso: string) => {
   const diffMs = end.getTime() - start.getTime();
   const days = Math.round(diffMs / (24 * 60 * 60 * 1000));
   return days > 0 ? days : 0;
+};
+
+export const diffDaysInclusive = (startIso: string, endIso: string) => {
+  const start = toLocalDate(startIso);
+  const end = toLocalDate(endIso);
+  if (!start || !end) {
+    return null;
+  }
+  const diffMs = end.getTime() - start.getTime();
+  const days = Math.round(diffMs / (24 * 60 * 60 * 1000));
+  if (days < 0) {
+    return null;
+  }
+  return days + 1;
 };

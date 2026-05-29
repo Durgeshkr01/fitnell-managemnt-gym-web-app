@@ -21,7 +21,7 @@ import {
 } from "@/lib/firebase/members";
 import { addPaymentRecord } from "@/lib/firebase/payments";
 import {
-  addDaysToIso,
+  addPlanDaysToIso,
   formatDateDisplay,
   formatDateTimeDisplay,
   parseDisplayDate,
@@ -484,7 +484,7 @@ function AdminMembersContent() {
       const resolvedPlanEndDate = planEndDate
         ? planEndDate
         : resolvedPlanDuration
-          ? addDaysToIso(resolvedPlanStart, resolvedPlanDuration)
+          ? addPlanDaysToIso(resolvedPlanStart, resolvedPlanDuration)
           : resolvedPlanStart;
 
       const result = await addMember({
@@ -561,14 +561,6 @@ function AdminMembersContent() {
     try {
       const { sendBill, ...updatePayload } = payload;
       await updateMemberPayment(editingMember.id, updatePayload);
-      await addPaymentRecord({
-        memberId: editingMember.id,
-        memberName: editingMember.name,
-        rollNumber: editingMember.rollNumber ?? null,
-        amount: payload.planAmount,
-        type: "Payment Update",
-        paidOn: payload.paidOn,
-      });
       setMembers((prev) =>
         prev.map((item) =>
           item.id === editingMember.id
@@ -586,6 +578,23 @@ function AdminMembersContent() {
         )
       );
       setEditingMember(null);
+
+      try {
+        await addPaymentRecord({
+          memberId: editingMember.id,
+          memberName: editingMember.name,
+          rollNumber: editingMember.rollNumber ?? null,
+          amount: payload.planAmount,
+          type: "Payment Update",
+          paidOn: payload.paidOn,
+        });
+      } catch (historyError) {
+        setError(
+          historyError instanceof Error
+            ? `Payment updated, but history failed: ${historyError.message}`
+            : "Payment updated, but history record failed."
+        );
+      }
 
       if (sendBill) {
         const phone = editingMember.phone?.trim();
