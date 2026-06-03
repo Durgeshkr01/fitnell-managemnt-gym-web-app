@@ -10,7 +10,6 @@ export const adminNav: NavItem[] = [
   { label: "Members", href: "/admin/members", icon: "👥" },
   { label: "Attendance", href: "/admin/attendance", icon: "✅" },
   { label: "Payment History", href: "/admin/payments", icon: "💳" },
-  { label: "Enquiry 📩", href: "/admin/enquiry", icon: "📩" },
   { label: "Broadcast & Cards", href: "/admin/broadcast-cards", icon: "📣" },
   { label: "Message Templates", href: "/admin/message-settings", icon: "✍️" },
 ];

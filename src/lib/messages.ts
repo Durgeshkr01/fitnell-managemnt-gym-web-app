@@ -8,8 +8,7 @@ export type MessageTemplateKey =
   | "birthdayWish"
   | "statusActive"
   | "paymentUpdate"
-  | "notificationGeneral"
-  | "enquiryCard";
+  | "notificationGeneral";
 
 export type MessageTemplates = Record<MessageTemplateKey, string>;
 
@@ -24,7 +23,6 @@ export const messageTemplateKeys: MessageTemplateKey[] = [
   "statusActive",
   "paymentUpdate",
   "notificationGeneral",
-  "enquiryCard",
 ];
 
 export const messageTemplateLabels: Record<MessageTemplateKey, string> = {
@@ -38,7 +36,6 @@ export const messageTemplateLabels: Record<MessageTemplateKey, string> = {
   statusActive: "Active Status Message",
   paymentUpdate: "Payment Update",
   notificationGeneral: "General Notification",
-  enquiryCard: "Enquiry Card",
 };
 
 export const messageTemplateVariables: Record<MessageTemplateKey, string[]> = {
@@ -68,7 +65,6 @@ export const messageTemplateVariables: Record<MessageTemplateKey, string[]> = {
   statusActive: ["name"],
   paymentUpdate: ["name", "title", "detail"],
   notificationGeneral: ["name", "title", "detail"],
-  enquiryCard: ["phone", "location"],
 };
 
 export const defaultMessageTemplates: MessageTemplates = {
@@ -91,8 +87,6 @@ export const defaultMessageTemplates: MessageTemplates = {
   paymentUpdate:
     "Namaste {{name}}, payment update: {{title}}. {{detail}} Apka dhanyawad!",
   notificationGeneral: "Namaste {{name}}, {{title}}. {{detail}}",
-  enquiryCard:
-    "SG FITNESS EVOLUTION\nStronger Today - Better Tomorrow\n\nENQUIRY CARD\nPhone: {{phone}}\nLocation: {{location}}\n\nIs card me ye benefits milenge:\n- Free Gym Tour\n- Trainer Consultation\n- Body Assessment\n- Special Joining Offers\n\n*Yeh card sirf enquiry ke liye hai, membership confirm nahi hoti.*",
 };
 
 export const resolveTemplate = (templates: MessageTemplates, key: MessageTemplateKey) => {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
 import ActionProvider from "@/components/action-provider";
+import HoldOverlay from "@/components/hold-overlay";
 import "./globals.css";
 
 const displayFont = Space_Grotesk({
@@ -46,7 +47,10 @@ export default function RootLayout({
       className={`${displayFont.variable} ${bodyFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-transparent text-slate-100">
-        <ActionProvider>{children}</ActionProvider>
+        <ActionProvider>
+          {children}
+          <HoldOverlay />
+        </ActionProvider>
       </body>
     </html>
   );
