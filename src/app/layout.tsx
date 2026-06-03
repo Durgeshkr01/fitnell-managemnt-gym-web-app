@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
 import ActionProvider from "@/components/action-provider";
-import HoldOverlay from "@/components/hold-overlay";
+import OneTimeActivationNotice from "@/components/one-time-activation-notice";
 import "./globals.css";
 
 const displayFont = Space_Grotesk({
@@ -48,8 +48,8 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-transparent text-slate-100">
         <ActionProvider>
+          <OneTimeActivationNotice />
           {children}
-          <HoldOverlay />
         </ActionProvider>
       </body>
     </html>
