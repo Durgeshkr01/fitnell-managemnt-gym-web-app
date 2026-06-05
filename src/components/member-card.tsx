@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import ActionButton from "@/components/action-button";
+import ExerciseCard from "@/components/exercise-card";
 import { formatDateDisplay } from "@/lib/date-utils";
 import type { MemberRecord } from "@/lib/firebase/members";
 import { fillTemplate, resolveTemplate } from "@/lib/messages";
@@ -47,6 +49,11 @@ export default function MemberCard({
   const showPayment = showPaymentAction;
   const showDuesActions = hasDuesValue(member.dues);
   const { templates } = useMessageTemplates();
+  const [isExerciseOpen, setIsExerciseOpen] = useState(false);
+  const [exerciseInput, setExerciseInput] = useState("");
+  const [exerciseSets, setExerciseSets] = useState("");
+  const [exerciseReps, setExerciseReps] = useState("");
+  const [exerciseRest, setExerciseRest] = useState("");
 
   const buildStatusMessage = () => {
     const name = member.name ?? "Member";
@@ -132,6 +139,16 @@ export default function MemberCard({
     const waLink = `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
     window.location.href = waLink;
   };
+
+  const exerciseButton = (
+    <button
+      type="button"
+      onClick={() => setIsExerciseOpen(true)}
+      className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-slate-300"
+    >
+      🏋️ Exercise
+    </button>
+  );
 
   return (
     <div className="glass-panel panel-card rounded-2xl border border-white/10 p-5">
@@ -228,6 +245,7 @@ export default function MemberCard({
               ✅ Clear Dues
             </button>
           ) : null}
+          {exerciseButton}
           {showPayment ? (
             <ActionButton
               actionName={`Member: Update Payment ${member.id}`}
@@ -271,6 +289,88 @@ export default function MemberCard({
               {deleting ? "..." : "🗑️"}
             </button>
           ) : null}
+        </div>
+      ) : null}
+
+      {readOnly ? (
+        <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+          {exerciseButton}
+        </div>
+      ) : null}
+
+      {isExerciseOpen ? (
+        <div
+          className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto bg-black/70 p-6 backdrop-blur"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Exercise lookup"
+        >
+          <div className="glass-panel-strong my-10 w-full max-w-3xl rounded-3xl border border-white/10 px-6 py-6 sm:my-12">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-white">Exercise Lookup</p>
+                <p className="text-xs text-slate-400">
+                  Paste AI response or type an exercise name.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsExerciseOpen(false)}
+                className="rounded-full border border-white/10 px-3 py-2 text-xs text-slate-300 hover:text-white"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-4 md:grid-cols-[1.2fr_0.4fr_0.4fr_0.5fr]">
+              <label className="text-xs text-slate-400">
+                Exercise / AI Text
+                <input
+                  value={exerciseInput}
+                  onChange={(event) => setExerciseInput(event.target.value)}
+                  placeholder="Bench press, deadlift, etc."
+                  className="input-base mt-2 w-full px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="text-xs text-slate-400">
+                Sets
+                <input
+                  value={exerciseSets}
+                  onChange={(event) => setExerciseSets(event.target.value)}
+                  placeholder="4"
+                  className="input-base mt-2 w-full px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="text-xs text-slate-400">
+                Reps
+                <input
+                  value={exerciseReps}
+                  onChange={(event) => setExerciseReps(event.target.value)}
+                  placeholder="10"
+                  className="input-base mt-2 w-full px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="text-xs text-slate-400">
+                Rest Time
+                <input
+                  value={exerciseRest}
+                  onChange={(event) => setExerciseRest(event.target.value)}
+                  placeholder="60s"
+                  className="input-base mt-2 w-full px-3 py-2 text-sm"
+                />
+              </label>
+            </div>
+
+            <div className="mt-6">
+              <ExerciseCard
+                exerciseName={exerciseInput}
+                sourceText={exerciseInput}
+                sets={exerciseSets}
+                reps={exerciseReps}
+                restTime={exerciseRest}
+              />
+            </div>
+          </div>
         </div>
       ) : null}
     </div>

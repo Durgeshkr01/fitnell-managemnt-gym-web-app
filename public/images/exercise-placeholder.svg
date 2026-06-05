@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-label="Exercise placeholder">
+  <rect width="640" height="360" fill="#0f172a"/>
+  <rect x="32" y="32" width="576" height="296" rx="24" fill="#111827" stroke="#334155" stroke-width="2"/>
+  <circle cx="320" cy="160" r="44" fill="#1f2937"/>
+  <path d="M260 238h120" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+  <path d="M290 140h60" stroke="#475569" stroke-width="8" stroke-linecap="round"/>
+  <path d="M290 170h60" stroke="#475569" stroke-width="8" stroke-linecap="round"/>
+  <text x="320" y="300" text-anchor="middle" font-size="16" fill="#94a3b8" font-family="Arial, sans-serif">No GIF Available</text>
+</svg>
