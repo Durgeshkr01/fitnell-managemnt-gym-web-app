@@ -30,9 +30,6 @@ export default function HomeHero() {
             <Link href="/access" className="sg-btn-red">
               Join Now
             </Link>
-            <a href="#assessment" className="sg-btn-glass">
-              Free Trial
-            </a>
             <Link href="/access" className="sg-btn-glass">
               Login
             </Link>

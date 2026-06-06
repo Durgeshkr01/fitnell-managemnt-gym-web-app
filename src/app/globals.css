@@ -549,28 +549,6 @@ button {
   to { transform: translateX(-50%); }
 }
 
-.wtf-trial-section {
-  position: relative;
-  background: linear-gradient(135deg, #1a0005 0%, #7f0a12 50%, var(--wtf-red) 100%);
-  overflow: hidden;
-}
-
-.wtf-trial-ribbon {
-  position: absolute;
-  right: 1.5rem;
-  top: 0;
-  background: linear-gradient(180deg, var(--wtf-gold), var(--wtf-gold-dark));
-  color: #000;
-  font-weight: 800;
-  font-size: 0.65rem;
-  letter-spacing: 0.15em;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  padding: 1rem 0.4rem;
-  border-radius: 0 0 6px 6px;
-  text-transform: uppercase;
-}
-
 .wtf-field {
   display: flex;
   flex-direction: column;

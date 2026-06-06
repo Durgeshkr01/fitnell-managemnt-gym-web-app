@@ -26,13 +26,10 @@ export default function HowItWorks() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-wrap justify-center gap-4">
+        <div className="mt-12 flex justify-center">
           <Link href="/access" className="sg-btn-red">
             Join Now
           </Link>
-          <a href="#assessment" className="sg-btn-glass">
-            Book Free Trial
-          </a>
         </div>
       </div>
     </SectionBackground>

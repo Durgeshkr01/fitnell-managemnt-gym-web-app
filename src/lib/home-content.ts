@@ -186,7 +186,7 @@ export const faqs = [
   },
   {
     q: "Can I try the gym before joining?",
-    a: "Absolutely. Fill the fitness assessment form or WhatsApp us to book a free trial session during opening hours.",
+    a: "Contact us on WhatsApp or fill the fitness assessment form to schedule a visit during opening hours.",
   },
   {
     q: "Is there a mobile app?",

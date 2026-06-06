@@ -35,12 +35,9 @@ export default function HomeNavbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Link href="/access" className="sg-btn-glass hidden text-xs sm:inline-flex">
+          <Link href="/access" className="sg-btn-glass text-xs sm:text-sm">
             Login
           </Link>
-          <a href="#assessment" className="sg-btn-red text-xs sm:text-sm">
-            Free Trial
-          </a>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
