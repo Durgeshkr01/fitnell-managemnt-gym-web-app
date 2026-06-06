@@ -320,3 +320,645 @@ button {
     font-family: var(--font-display), sans-serif;
   }
 }
+
+/* Homepage-only theme overrides for a more premium, gold-accent look */
+.homepage-theme {
+  --accent: #f59e0b; /* warm gold */
+  --accent-2: #06b6d4; /* teal-cyan */
+  --accent-glow: rgba(245, 158, 11, 0.26);
+  --accent-2-glow: rgba(6, 182, 212, 0.18);
+  --panel-accent: rgba(245, 158, 11, 0.12);
+  --panel-accent-2: rgba(6, 182, 212, 0.08);
+}
+
+/* Hero styles for premium look */
+.hero-section {
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  min-height: 420px;
+  display: grid;
+  align-items: center;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center center;
+  filter: saturate(0.95) contrast(1.02) brightness(0.45);
+  z-index: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(2,6,23,0.5), rgba(2,6,23,0.65));
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: 2.25rem;
+  line-height: 1.02;
+}
+
+.hero-sub {
+  color: #e6e6e6;
+  opacity: 0.9;
+}
+
+.hero-ctas a { text-decoration: none }
+.hero-ctas .btn-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(245,158,11,0.12);
+}
+
+@media (min-width: 768px) {
+  .hero-title { font-size: 3.25rem }
+}
+
+@media (max-width: 640px) {
+  .hero-section { min-height: 340px }
+  .hero-title { font-size: 1.6rem }
+}
+
+/* Responsive tweak for top-right access button */
+.access-top-right a { padding: 0.5rem 0.9rem }
+
+/* ── SG Fitness premium homepage theme ── */
+.sg-premium {
+  --sg-red: #c93a4a;
+  --sg-red-dark: #a82f3d;
+  --sg-red-glow: rgba(201, 58, 74, 0.22);
+  --sg-accent: #f0b429;
+  --sg-accent-soft: #fcd34d;
+  background: linear-gradient(180deg, #0f1419 0%, #1a2030 45%, #141a24 100%);
+}
+
+/* Legacy alias */
+.wtf-theme {
+  --wtf-red: #e11d2e;
+  --wtf-red-dark: #b91c1c;
+  --wtf-gold: #f5c518;
+  --wtf-gold-dark: #d4a90a;
+}
+
+.wtf-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.wtf-hero {
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.wtf-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: 70% center;
+  filter: brightness(0.4) saturate(0.85) contrast(1.1);
+}
+
+.wtf-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.55) 45%, rgba(0, 0, 0, 0.2) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+.wtf-hero-watermark {
+  position: absolute;
+  right: -2%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(8rem, 22vw, 18rem);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.05em;
+}
+
+.wtf-hero-title {
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: white;
+}
+
+.wtf-btn-red {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: 999px;
+  background: var(--wtf-red);
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+.wtf-btn-red:hover {
+  background: var(--wtf-red-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(225, 29, 46, 0.4);
+}
+
+.wtf-btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.25rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fceabb, var(--wtf-gold));
+  color: #000;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+.wtf-btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(245, 197, 24, 0.35);
+}
+
+.wtf-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.wtf-btn-outline:hover {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.wtf-marquee {
+  overflow: hidden;
+}
+
+.wtf-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: wtf-marquee 30s linear infinite;
+}
+
+@keyframes wtf-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.wtf-trial-section {
+  position: relative;
+  background: linear-gradient(135deg, #1a0005 0%, #7f0a12 50%, var(--wtf-red) 100%);
+  overflow: hidden;
+}
+
+.wtf-trial-ribbon {
+  position: absolute;
+  right: 1.5rem;
+  top: 0;
+  background: linear-gradient(180deg, var(--wtf-gold), var(--wtf-gold-dark));
+  color: #000;
+  font-weight: 800;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 1rem 0.4rem;
+  border-radius: 0 0 6px 6px;
+  text-transform: uppercase;
+}
+
+.wtf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.wtf-field span {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.wtf-field input,
+.wtf-field select {
+  border-radius: 0.6rem;
+  border: 1px solid rgba(225, 29, 46, 0.6);
+  background: rgba(0, 0, 0, 0.35);
+  color: white;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.wtf-field input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.wtf-field input:focus,
+.wtf-field select:focus {
+  border-color: var(--wtf-gold);
+  box-shadow: 0 0 0 2px rgba(245, 197, 24, 0.2);
+}
+
+.wtf-field select option {
+  background: #1a1a1a;
+  color: white;
+}
+
+/* ── SG Premium component styles ── */
+.sg-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.sg-nav-link {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.65);
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.sg-nav-link:hover {
+  color: white;
+}
+
+.sg-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.sg-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.65) saturate(0.95) contrast(1.05);
+  transform: scale(1.02);
+  animation: sg-hero-zoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes sg-hero-zoom {
+  from { transform: scale(1.02); }
+  to { transform: scale(1.08); }
+}
+
+.sg-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(12, 18, 28, 0.88) 0%, rgba(18, 24, 36, 0.6) 50%, rgba(22, 28, 40, 0.4) 100%),
+    linear-gradient(180deg, rgba(10, 14, 22, 0.55) 0%, transparent 40%, rgba(8, 12, 20, 0.7) 100%);
+}
+
+.sg-hero-glow {
+  position: absolute;
+  bottom: -20%;
+  left: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(240, 180, 41, 0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.sg-hero-title {
+  font-size: clamp(2.75rem, 8vw, 5.5rem);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+/* Section backgrounds with bodybuilder imagery */
+.sg-bg-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.sg-bg-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.55) saturate(0.9);
+  transform: scale(1.03);
+}
+
+.sg-bg-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.sg-bg-warm .sg-bg-overlay {
+  background:
+    linear-gradient(135deg, rgba(14, 20, 32, 0.88) 0%, rgba(20, 26, 38, 0.82) 50%, rgba(16, 22, 34, 0.86) 100%);
+}
+
+.sg-bg-cool .sg-bg-overlay {
+  background:
+    linear-gradient(135deg, rgba(12, 18, 30, 0.86) 0%, rgba(18, 24, 36, 0.8) 50%, rgba(14, 20, 32, 0.84) 100%);
+}
+
+.sg-bg-light .sg-bg-overlay {
+  background:
+    linear-gradient(135deg, rgba(16, 22, 34, 0.8) 0%, rgba(22, 28, 40, 0.74) 50%, rgba(18, 24, 36, 0.78) 100%);
+}
+
+.sg-bg-hero .sg-bg-overlay {
+  background: linear-gradient(135deg, rgba(14, 20, 32, 0.78), rgba(18, 24, 36, 0.72));
+}
+
+.sg-glass-panel {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.sg-glass-stat {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.sg-glass-dark {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+}
+
+.sg-promo-banner {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0508 40%, #3d0a10 100%);
+  border: 1px solid rgba(225, 29, 46, 0.2);
+}
+
+.sg-btn-red {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.75rem;
+  border-radius: 999px;
+  background: var(--sg-red);
+  color: white;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.sg-btn-red:hover {
+  background: var(--sg-red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px var(--sg-red-glow);
+}
+
+.sg-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.sg-btn-outline:hover {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+}
+
+.sg-btn-outline-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  color: black;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.sg-btn-outline-dark:hover {
+  border-color: var(--sg-red);
+  color: var(--sg-red);
+}
+
+.sg-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.5rem;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.sg-btn-ghost:hover {
+  color: white;
+}
+
+.sg-btn-glass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  transition: background 0.2s, transform 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.sg-btn-glass:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.55);
+  transform: translateY(-1px);
+}
+
+.sg-btn-android {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.75rem;
+  background: white;
+  color: black;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sg-btn-android:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
+}
+
+.sg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sg-field span {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.sg-field input,
+.sg-field select {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 0.8rem 1rem;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.sg-field input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.sg-field input:focus,
+.sg-field select:focus {
+  border-color: var(--sg-accent);
+  box-shadow: 0 0 0 3px rgba(240, 180, 41, 0.2);
+}
+
+.sg-accent-text {
+  color: var(--sg-accent-soft);
+}
+
+.sg-accent-bg {
+  background: color-mix(in srgb, var(--sg-red) 25%, transparent);
+}
+
+.sg-field select option {
+  background: #111;
+  color: white;
+}
+
+.sg-phone {
+  width: 200px;
+  padding: 10px;
+  border-radius: 2rem;
+  background: linear-gradient(145deg, rgba(255,255,255,0.25), rgba(255,255,255,0.08));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.sg-phone-sm {
+  width: 160px;
+  padding: 8px;
+  border-radius: 1.5rem;
+}
+
+.sg-phone-notch {
+  width: 60px;
+  height: 6px;
+  margin: 0 auto 8px;
+  border-radius: 999px;
+  background: #333;
+}
+
+.sg-phone-screen {
+  border-radius: 1.25rem;
+  background: white;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+.sg-phone-sm .sg-phone-screen {
+  min-height: 220px;
+  border-radius: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-hero-bg {
+    animation: none;
+  }
+}
