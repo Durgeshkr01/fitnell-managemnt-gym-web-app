@@ -259,7 +259,7 @@ export default function AddMemberModal({
                     Join Date
                   </label>
                   <DatePicker
-                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                    className="portal-input mt-2"
                     value={form.joinDate ?? ""}
                     onChange={(value) =>
                       setForm((prev) => ({ ...prev, joinDate: value }))
@@ -284,7 +284,7 @@ export default function AddMemberModal({
                   Roll Number
                 </label>
                 <input
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                  className="portal-input mt-2"
                   value={form.rollNumber ?? ""}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, rollNumber: event.target.value }))
@@ -298,7 +298,7 @@ export default function AddMemberModal({
                   Gender
                 </label>
                 <select
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                  className="portal-input mt-2"
                   value={form.gender}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, gender: event.target.value }))
@@ -314,7 +314,7 @@ export default function AddMemberModal({
                   Name
                 </label>
                 <input
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                  className="portal-input mt-2"
                   value={form.name ?? ""}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, name: event.target.value }))
@@ -328,7 +328,7 @@ export default function AddMemberModal({
                   Date of Birth
                 </label>
                 <DatePicker
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                  className="portal-input mt-2"
                   value={form.dateOfBirth ?? ""}
                   onChange={(value) =>
                     setForm((prev) => ({ ...prev, dateOfBirth: value }))
@@ -340,7 +340,7 @@ export default function AddMemberModal({
                   Phone Number
                 </label>
                 <input
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                  className="portal-input mt-2"
                   value={form.phone ?? ""}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, phone: event.target.value }))
@@ -355,7 +355,7 @@ export default function AddMemberModal({
                     Plan Start Date
                   </label>
                   <DatePicker
-                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                    className="portal-input mt-2"
                     value={form.planStartDate ?? ""}
                     onChange={(value) =>
                       setForm((prev) => ({
@@ -374,7 +374,7 @@ export default function AddMemberModal({
                     Plan End Date
                   </label>
                   <DatePicker
-                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                    className="portal-input mt-2"
                     value={form.planEndDate ?? ""}
                     onChange={(value) => {
                       const duration = diffDaysInclusive(form.planStartDate, value);
@@ -394,7 +394,7 @@ export default function AddMemberModal({
                   Plan Days
                 </label>
                 <input
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                  className="portal-input mt-2"
                   value={form.planDurationDays ?? ""}
                   onChange={(event) => {
                     const nextValue = event.target.value;
@@ -421,7 +421,7 @@ export default function AddMemberModal({
                     Plan Amount
                   </label>
                   <input
-                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                    className="portal-input mt-2"
                     value={form.planAmount ?? ""}
                     onChange={(event) =>
                       setForm((prev) => ({ ...prev, planAmount: event.target.value }))
@@ -437,7 +437,7 @@ export default function AddMemberModal({
                     Dues
                   </label>
                   <input
-                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                    className="portal-input mt-2"
                     value={form.dues ?? "0"}
                     onChange={(event) =>
                       setForm((prev) => ({ ...prev, dues: event.target.value }))

@@ -27,7 +27,7 @@ export default function HomeHero() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/access" className="sg-btn-red">
+            <Link href="#assessment" className="sg-btn-red">
               Join Now
             </Link>
             <Link href="/access" className="sg-btn-glass">

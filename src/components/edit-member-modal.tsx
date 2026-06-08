@@ -120,7 +120,7 @@ export default function EditMemberModal({
               Roll Number
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.rollNumber}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, rollNumber: event.target.value }))
@@ -135,7 +135,7 @@ export default function EditMemberModal({
                 Name
               </label>
               <input
-                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="portal-input mt-2"
                 value={form.name}
                 onChange={(event) =>
                   setForm((prev) => ({ ...prev, name: event.target.value }))
@@ -148,7 +148,7 @@ export default function EditMemberModal({
                 Gender
               </label>
               <select
-                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="portal-input mt-2"
                 value={form.gender}
                 onChange={(event) =>
                   setForm((prev) => ({
@@ -170,7 +170,7 @@ export default function EditMemberModal({
                 Date of Birth
               </label>
               <DatePicker
-                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="portal-input mt-2"
                 value={form.dateOfBirth}
                 onChange={(value) =>
                   setForm((prev) => ({ ...prev, dateOfBirth: value }))
@@ -182,7 +182,7 @@ export default function EditMemberModal({
                 Phone
               </label>
               <input
-                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="portal-input mt-2"
                 value={form.phone}
                 onChange={(event) =>
                   setForm((prev) => ({ ...prev, phone: event.target.value }))
@@ -197,7 +197,7 @@ export default function EditMemberModal({
               Trainer Code
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.trainerCode}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, trainerCode: event.target.value }))
@@ -210,7 +210,7 @@ export default function EditMemberModal({
               Join Date
             </label>
             <DatePicker
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.joinDate}
               onChange={(value) => setForm((prev) => ({ ...prev, joinDate: value }))}
               required
@@ -223,7 +223,7 @@ export default function EditMemberModal({
                 Plan Start Date
               </label>
               <DatePicker
-                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="portal-input mt-2"
                 value={form.planStartDate}
                 onChange={(value) =>
                   setForm((prev) => ({
@@ -242,7 +242,7 @@ export default function EditMemberModal({
                 Plan End Date
               </label>
               <DatePicker
-                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="portal-input mt-2"
                 value={form.planEndDate}
                 onChange={(value) => {
                   const duration = diffDaysInclusive(form.planStartDate, value);
@@ -263,7 +263,7 @@ export default function EditMemberModal({
                 Plan Days
               </label>
               <input
-                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="portal-input mt-2"
                 value={form.planDurationDays}
                 onChange={(event) => {
                   const nextValue = event.target.value;
@@ -285,7 +285,7 @@ export default function EditMemberModal({
                 Plan Amount
               </label>
               <input
-                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="portal-input mt-2"
                 value={form.planAmount}
                 onChange={(event) =>
                   setForm((prev) => ({ ...prev, planAmount: event.target.value }))
@@ -301,7 +301,7 @@ export default function EditMemberModal({
               Dues
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.dues}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, dues: event.target.value }))

@@ -27,7 +27,7 @@ export default function HowItWorks() {
         </div>
 
         <div className="mt-12 flex justify-center">
-          <Link href="/access" className="sg-btn-red">
+          <Link href="#assessment" className="sg-btn-red">
             Join Now
           </Link>
         </div>

@@ -6,6 +6,7 @@ import HomeNavbar from "@/components/home/navbar";
 import HomeHero from "@/components/home/hero";
 import AssessmentForm from "@/components/home/assessment-form";
 import Facilities from "@/components/home/facilities";
+import GymGallery from "@/components/home/gym-gallery";
 import Locations from "@/components/home/locations";
 import FitnessJourney from "@/components/home/fitness-journey";
 import AppPreview from "@/components/home/app-preview";
@@ -51,6 +52,7 @@ export default function Home() {
       <HomeHero />
       <AssessmentForm />
       <Facilities />
+      <GymGallery />
       <Locations />
       <FitnessJourney />
       <AppPreview />

@@ -4,7 +4,19 @@ export const BG_IMAGES = {
   hero: "/images/hero-gym-bg.jpg",
   section1: "/images/section-gym-bg.jpg",
   section2: "/images/section-gym-bg-2.jpg",
+  assessment: "/images/assessment-bg.jpg",
+  facilities: "/images/facilities-bg.jpg",
 } as const;
+
+export const galleryImages = [
+  "/images/gym-gallery/gallery-1.png",
+  "/images/gym-gallery/gallery-2.png",
+  "/images/gym-gallery/gallery-3.png",
+  "/images/gym-gallery/gallery-4.png",
+  "/images/gym-gallery/gallery-5.png",
+  "/images/gym-gallery/gallery-6.png",
+  "/images/gym-gallery/gallery-7.png",
+] as const;
 
 export const GYM_PHONE = "8809551534";
 export const GYM_WHATSAPP = "918809551534";
@@ -134,16 +146,20 @@ export const transformations = [
     quote: "SG Fitness changed my routine completely. Trainers kept me accountable every week.",
   },
   {
-    name: "Priya S.",
+    name: "Saurabh",
     goal: "Muscle Gain",
     result: "Gained 6 kg lean mass",
     quote: "The diet plan and strength program were perfectly tailored to my body type.",
+    beforeImage: "/images/transformations/saurabh-before.jpg",
+    afterImage: "/images/transformations/saurabh-after.jpg",
   },
   {
-    name: "Amit T.",
+    name: "Durgesh",
     goal: "General Fitness",
     result: "Improved stamina & energy",
     quote: "Best gym in Supaul. Clean AC facility and supportive community.",
+    beforeImage: "/images/transformations/durgesh-before.jpg",
+    afterImage: "/images/transformations/durgesh-after.jpg",
   },
 ];
 
@@ -153,21 +169,23 @@ export const trainers = [
     role: "Strength & Conditioning",
     cert: "Certified Fitness Coach",
     exp: "8+ years",
-    image: "/images/gym-owner.jpg",
+    image: "/images/head-trainer.jpg",
+    imagePosition: "object-cover object-[center_12%]",
   },
   {
     name: "Diet Coach",
     role: "Nutrition Specialist",
     cert: "Sports Nutrition Certified",
     exp: "5+ years",
-    image: "/images/durgesh.jpg",
+    image: "/images/diet-coach.jpg",
+    imagePosition: "object-cover object-[center_18%]",
   },
   {
     name: "Cardio Coach",
     role: "HIIT & Weight Loss",
     cert: "ACE Certified Trainer",
     exp: "6+ years",
-    image: "/images/exercise-placeholder.svg",
+    image: "/images/cardio-coach.jpg",
   },
 ];
 

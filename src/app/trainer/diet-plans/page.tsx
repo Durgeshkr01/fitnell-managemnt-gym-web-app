@@ -159,7 +159,7 @@ export default function TrainerDietPlansPage() {
               Select Member
             </label>
             <select
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={selectedMemberId}
               onChange={(event) => {
                 const nextId = event.target.value;
@@ -201,7 +201,7 @@ export default function TrainerDietPlansPage() {
               Name
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.name}
               onChange={(event) => updateField("name", event.target.value)}
               placeholder="Member name"
@@ -212,7 +212,7 @@ export default function TrainerDietPlansPage() {
               Date of Birth
             </label>
             <DatePicker
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.dateOfBirth}
               onChange={(value) => updateField("dateOfBirth", value)}
             />
@@ -222,7 +222,7 @@ export default function TrainerDietPlansPage() {
               Goal
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.goal}
               onChange={(event) => updateField("goal", event.target.value)}
               placeholder="Fat loss, muscle gain"
@@ -233,7 +233,7 @@ export default function TrainerDietPlansPage() {
               Activity Level
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.activityLevel}
               onChange={(event) => updateField("activityLevel", event.target.value)}
               placeholder="Beginner, active, athlete"
@@ -244,7 +244,7 @@ export default function TrainerDietPlansPage() {
               Height
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.height}
               onChange={(event) => updateField("height", event.target.value)}
               placeholder="e.g. 170 cm"
@@ -255,7 +255,7 @@ export default function TrainerDietPlansPage() {
               Weight
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.weight}
               onChange={(event) => updateField("weight", event.target.value)}
               placeholder="e.g. 70 kg"
@@ -266,7 +266,7 @@ export default function TrainerDietPlansPage() {
               Allergies
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.allergies}
               onChange={(event) => updateField("allergies", event.target.value)}
               placeholder="Peanuts, lactose"
@@ -277,7 +277,7 @@ export default function TrainerDietPlansPage() {
               Equipment
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.equipment}
               onChange={(event) => updateField("equipment", event.target.value)}
               placeholder="Dumbbells, treadmill"
@@ -288,7 +288,7 @@ export default function TrainerDietPlansPage() {
               Days Per Week
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.daysPerWeek}
               onChange={(event) => updateField("daysPerWeek", event.target.value)}
               placeholder="4"
@@ -302,7 +302,7 @@ export default function TrainerDietPlansPage() {
               Minutes Per Session
             </label>
             <input
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="portal-input mt-2"
               value={form.sessionMinutes}
               onChange={(event) => updateField("sessionMinutes", event.target.value)}
               placeholder="45"

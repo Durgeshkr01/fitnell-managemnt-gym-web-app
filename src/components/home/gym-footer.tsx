@@ -27,6 +27,7 @@ export default function GymFooter() {
               <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">Links</h3>
               <ul className="mt-4 space-y-2 text-sm text-white/80">
                 <li><a href="#facilities" className="hover:text-white">Facilities</a></li>
+                <li><a href="#gallery" className="hover:text-white">Gallery</a></li>
                 <li><a href="#locations" className="hover:text-white">Locations</a></li>
                 <li><a href="#trainers" className="hover:text-white">Trainers</a></li>
                 <li><a href="#faq" className="hover:text-white">FAQ</a></li>
@@ -46,7 +47,7 @@ export default function GymFooter() {
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">Get Started</h3>
               <div className="mt-4 flex flex-wrap gap-2">
-                <Link href="/access" className="sg-btn-red text-xs">Join Now</Link>
+                <Link href="#assessment" className="sg-btn-red text-xs">Join Now</Link>
                 <a href={`tel:${GYM_PHONE}`} className="sg-btn-glass text-xs">Call</a>
                 <a href="https://wa.me/918809551534" target="_blank" rel="noreferrer" className="sg-btn-glass text-xs">
                   WhatsApp

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AuthGuard from "@/components/auth-guard";
 import AiChatbot from "@/components/ai-chatbot";
@@ -196,6 +197,56 @@ export default function MemberPortalPage() {
           ) : member ? (
             <MemberCard member={member} readOnly />
           ) : null}
+
+          <SectionHeader
+            title="Fitness Tools"
+            subtitle="BMI, diet aur exercise — sab ek jagah."
+          />
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Link
+              href="/member/bmi-calculator"
+              className="glass-panel group rounded-2xl border border-white/10 p-6 transition hover:border-blue-400/30 hover:bg-white/5"
+            >
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                Tool 01
+              </p>
+              <h3 className="font-display mt-2 text-xl text-white group-hover:text-blue-200">
+                BMI Calculator
+              </h3>
+              <p className="mt-2 text-sm text-slate-300">
+                Apna BMI, daily calories aur protein target nikalein.
+              </p>
+            </Link>
+            <Link
+              href="/member/diet-tracker"
+              className="glass-panel group rounded-2xl border border-white/10 p-6 transition hover:border-emerald-400/30 hover:bg-white/5"
+            >
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                Tool 02
+              </p>
+              <h3 className="font-display mt-2 text-xl text-white group-hover:text-emerald-200">
+                Diet Tracker
+              </h3>
+              <p className="mt-2 text-sm text-slate-300">
+                Khana ka naam likhein — calorie aur protein auto track ho.
+              </p>
+            </Link>
+            <Link
+              href="/member/exercises"
+              className="glass-panel group rounded-2xl border border-white/10 p-6 transition hover:border-violet-400/30 hover:bg-white/5"
+            >
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                Tool 03
+              </p>
+              <h3 className="font-display mt-2 text-xl text-white group-hover:text-violet-200">
+                Exercise Lookup
+              </h3>
+              <p className="mt-2 text-sm text-slate-300">
+                Exercise ka naam likhein — GIF aur form guide dekhein.
+              </p>
+            </Link>
+          </div>
 
           <SectionHeader
             title="Payment History"

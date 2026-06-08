@@ -26,6 +26,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   min-height: 100%;
@@ -56,6 +60,10 @@ button {
   border: 1px solid var(--border);
   box-shadow: 0 25px 45px rgba(2, 6, 23, 0.45);
   backdrop-filter: blur(16px);
+}
+
+.glass-panel.overflow-visible {
+  overflow: visible;
 }
 
 .glass-panel-strong {
@@ -155,6 +163,7 @@ button {
     border: 1px solid rgba(148, 163, 184, 0.2);
     background: rgba(15, 23, 42, 0.6);
     color: var(--text);
+    color-scheme: dark;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
@@ -163,6 +172,42 @@ button {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     outline: none;
   }
+
+  .input-base option {
+    background-color: #0f172a;
+    color: #e5e7eb;
+  }
+
+  .portal-input {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #fff;
+    outline: none;
+    color-scheme: dark;
+    transition: border-color 0.2s ease;
+  }
+
+  .portal-input:focus {
+    border-color: rgba(96, 165, 250, 0.4);
+  }
+
+  .portal-input option {
+    background-color: #0f172a;
+    color: #e5e7eb;
+  }
+}
+
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: #0f172a;
+  color: #e5e7eb;
 }
 
 @keyframes fade-up {
@@ -549,6 +594,26 @@ button {
   to { transform: translateX(-50%); }
 }
 
+.sg-gallery-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.sg-gallery-track {
+  animation: sg-gallery-scroll 40s linear infinite;
+}
+
+@keyframes sg-gallery-scroll {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-gallery-track {
+    animation: none;
+  }
+}
+
 .wtf-field {
   display: flex;
   flex-direction: column;
@@ -566,6 +631,7 @@ button {
   border: 1px solid rgba(225, 29, 46, 0.6);
   background: rgba(0, 0, 0, 0.35);
   color: white;
+  color-scheme: dark;
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
   outline: none;
@@ -621,8 +687,8 @@ button {
   position: absolute;
   inset: 0;
   background-size: cover;
-  background-position: center;
-  filter: brightness(0.65) saturate(0.95) contrast(1.05);
+  background-position: center 30%;
+  filter: brightness(0.9) saturate(1.05) contrast(1.05);
   transform: scale(1.02);
   animation: sg-hero-zoom 20s ease-in-out infinite alternate;
 }
@@ -636,8 +702,8 @@ button {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(12, 18, 28, 0.88) 0%, rgba(18, 24, 36, 0.6) 50%, rgba(22, 28, 40, 0.4) 100%),
-    linear-gradient(180deg, rgba(10, 14, 22, 0.55) 0%, transparent 40%, rgba(8, 12, 20, 0.7) 100%);
+    linear-gradient(90deg, rgba(12, 18, 28, 0.55) 0%, rgba(18, 24, 36, 0.3) 45%, rgba(22, 28, 40, 0.15) 100%),
+    linear-gradient(180deg, rgba(10, 14, 22, 0.3) 0%, transparent 45%, rgba(8, 12, 20, 0.4) 100%);
 }
 
 .sg-hero-glow {
@@ -870,6 +936,7 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: rgba(255, 255, 255, 0.1);
   color: white;
+  color-scheme: dark;
   padding: 0.8rem 1rem;
   font-size: 0.9rem;
   outline: none;
