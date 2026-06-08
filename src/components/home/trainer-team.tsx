@@ -25,7 +25,9 @@ export default function TrainerTeam() {
                   src={t.image}
                   alt={t.name}
                   fill
-                  className="object-cover transition duration-500 hover:scale-105"
+                  className={`transition duration-500 hover:scale-105 ${
+                    "imagePosition" in t && t.imagePosition ? t.imagePosition : "object-cover object-center"
+                  }`}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4">

@@ -292,12 +292,6 @@ export default function MemberCard({
         </div>
       ) : null}
 
-      {readOnly ? (
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-          {exerciseButton}
-        </div>
-      ) : null}
-
       {isExerciseOpen ? (
         <div
           className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto bg-black/70 p-6 backdrop-blur"

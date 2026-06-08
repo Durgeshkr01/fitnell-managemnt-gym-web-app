@@ -32,7 +32,7 @@ export default function AssessmentForm() {
   }
 
   return (
-    <SectionBackground id="assessment" image={BG_IMAGES.section1} variant="warm">
+    <SectionBackground id="assessment" image={BG_IMAGES.assessment} variant="warm">
       <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-20">
         <SectionLabel light>/ Fitness Assessment</SectionLabel>
         <h2 className="mt-3 font-display text-3xl font-bold text-white sm:text-4xl">

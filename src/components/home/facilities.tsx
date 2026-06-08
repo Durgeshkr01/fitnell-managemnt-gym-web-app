@@ -4,7 +4,7 @@ import SectionLabel from "./section-label";
 
 export default function Facilities() {
   return (
-    <SectionBackground id="facilities" image={BG_IMAGES.section2} variant="cool">
+    <SectionBackground id="facilities" image={BG_IMAGES.facilities} variant="cool">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
         <div className="max-w-2xl">
           <SectionLabel light>/ Facilities</SectionLabel>

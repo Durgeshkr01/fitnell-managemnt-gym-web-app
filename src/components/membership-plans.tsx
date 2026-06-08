@@ -40,7 +40,7 @@ export default function MembershipPlans() {
                   </li>
                 ))}
               </ul>
-              <a href="/access" className={`mt-8 inline-flex w-full justify-center ${p.featured ? "wtf-btn-red" : "wtf-btn-outline"}`}>
+              <a href="#assessment" className={`mt-8 inline-flex w-full justify-center ${p.featured ? "wtf-btn-red" : "wtf-btn-outline"}`}>
                 Join Now
               </a>
             </div>

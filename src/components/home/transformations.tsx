@@ -31,7 +31,7 @@ export default function Transformations() {
               <div className="grid grid-cols-2 gap-1 p-1">
                 <div
                   className="flex aspect-[3/4] flex-col items-center justify-end rounded-lg bg-cover bg-center p-3"
-                  style={{ backgroundImage: `url('${BG_IMAGES.section1}')` }}
+                  style={{ backgroundImage: `url('${t.beforeImage ?? BG_IMAGES.section1}')` }}
                 >
                   <span className="rounded bg-black/50 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/80">
                     Before
@@ -39,7 +39,7 @@ export default function Transformations() {
                 </div>
                 <div
                   className="flex aspect-[3/4] flex-col items-center justify-end rounded-lg bg-cover bg-center p-3"
-                  style={{ backgroundImage: `url('${BG_IMAGES.hero}')` }}
+                  style={{ backgroundImage: `url('${t.afterImage ?? BG_IMAGES.hero}')` }}
                 >
                   <span className="rounded bg-emerald-600/70 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white">
                     After
